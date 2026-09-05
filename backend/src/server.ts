@@ -8,6 +8,9 @@ import { startGrpcServer } from './grpc/server';
 import authRoutes from './api/auth';
 import gatewayRoutes from './api/gateways';
 import networkRoutes from './api/networks';
+import devicesRoutes from './api/devices';
+import routesRoutes from './api/routes';
+import firewallRoutes from './api/firewall';
 
 const app = express();
 
@@ -18,6 +21,9 @@ app.use(express.json());
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/gateways', gatewayRoutes);
 app.use('/api/v1/networks', networkRoutes);
+app.use('/api/v1/devices', devicesRoutes);
+app.use('/api/v1/routes', routesRoutes);
+app.use('/api/v1/firewall', firewallRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
