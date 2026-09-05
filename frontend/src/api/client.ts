@@ -52,14 +52,10 @@ export const api = {
     request<any>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   
   login: async (email: string, password: string): Promise<AuthResponse> => {
-    const formData = new URLSearchParams()
-    formData.append('username', email)
-    formData.append('password', password)
-
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: email, password }),
     })
     if (!response.ok) {
       const err = await response.json().catch(() => ({}))
