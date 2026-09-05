@@ -3,7 +3,7 @@ import * as protoLoader from '@grpc/proto-loader';
 import path from 'path';
 import { prisma } from '../core/database';
 
-const PROTO_PATH = path.resolve(__dirname, '../../../../proto/vpn_node.proto');
+const PROTO_PATH = path.resolve(__dirname, '../../../proto/vpn_node.proto');
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
