@@ -4,7 +4,7 @@ import path from 'path';
 import { env } from '../config/env';
 import { VpnNodeControlServiceImpl } from './service';
 
-const PROTO_PATH = path.resolve(__dirname, '../../../../proto/vpn_node.proto');
+const PROTO_PATH = path.resolve(__dirname, '../../../proto/vpn_node.proto');
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
