@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.VarChar(36)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  role         String   @default("OWNER") @db.VarChar(50)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenants Tenant[]
+
+  @@map("users")
+}
+
+model Tenant {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  name      String   @unique @db.VarChar(255)
+  ownerId   String   @map("owner_id") @db.VarChar(36)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  networks Network[]
+
+  @@map("tenants")
+}
+
+model Network {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  name      String   @db.VarChar(255)
+  cidr      String   @unique @db.VarChar(50)
+  vlanId    Int      @unique @map("vlan_id")
+  tenantId  String   @map("tenant_id") @db.VarChar(36)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  devices     Device[]
+  routes      Route[]
+  firewalls   FirewallRule[]
+  assignments GatewayAssignment[]
+
+  @@map("networks")
+}
+
+model Gateway {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  nodeId     String   @unique @map("node_id") @db.VarChar(255)
+  hostname   String   @db.VarChar(255)
+  publicIp   String   @map("public_ip") @db.VarChar(50)
+  listenPort Int      @default(51820) @map("listen_port")
+  publicKey  String   @map("public_key") @db.VarChar(255)
+  region     String   @default("us-east-1") @db.VarChar(100)
+  provider   String   @default("aws") @db.VarChar(100)
+  status     String   @default("REGISTERED") @db.VarChar(50)
+  capacity   Int      @default(1000)
+  createdAt  DateTime @default(now()) @map("created_at")
+  lastHeartbeat DateTime? @map("last_heartbeat")
+
+  assignments GatewayAssignment[]
+  desiredState GatewayDesiredState?
+  actualState  GatewayActualState?
+
+  @@map("gateways")
+}
+
+model GatewayAssignment {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  gatewayId  String   @map("gateway_id") @db.VarChar(36)
+  networkId  String   @map("network_id") @db.VarChar(36)
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  gateway Gateway @relation(fields: [gatewayId], references: [id], onDelete: Cascade)
+  network Network @relation(fields: [networkId], references: [id], onDelete: Cascade)
+
+  @@unique([gatewayId, networkId])
+  @@map("gateway_assignments")
+}
+
+model Device {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  name       String   @db.VarChar(255)
+  publicKey  String   @unique @map("public_key") @db.VarChar(255)
+  vpnIp      String   @unique @map("vpn_ip") @db.VarChar(50)
+  networkId  String   @map("network_id") @db.VarChar(36)
+  isExitNode Boolean  @default(false) @map("is_exit_node")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  network Network @relation(fields: [networkId], references: [id], onDelete: Cascade)
+  routes  Route[]
+
+  @@map("devices")
+}
+
+model Route {
+  id              String   @id @default(uuid()) @db.VarChar(36)
+  destinationCidr String   @map("destination_cidr") @db.VarChar(50)
+  nextHopVpnIp    String   @map("next_hop_vpn_ip") @db.VarChar(50)
+  networkId       String   @map("network_id") @db.VarChar(36)
+  deviceId        String?  @map("device_id") @db.VarChar(36)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  network Network @relation(fields: [networkId], references: [id], onDelete: Cascade)
+  device  Device? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@map("routes")
+}
+
+model FirewallRule {
+  id              String   @id @default(uuid()) @db.VarChar(36)
+  sourceCidr      String   @map("source_cidr") @db.VarChar(50)
+  destinationCidr String   @map("destination_cidr") @db.VarChar(50)
+  protocol        String   @default("all") @db.VarChar(20)
+  port            Int?
+  action          String   @default("accept") @db.VarChar(20)
+  networkId       String   @map("network_id") @db.VarChar(36)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  network Network @relation(fields: [networkId], references: [id], onDelete: Cascade)
+
+  @@map("firewall_rules")
+}
+
+model GatewayDesiredState {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  gatewayId  String   @unique @map("gateway_id") @db.VarChar(36)
+  version    BigInt   @default(1)
+  stateJson  Json     @map("state_json")
+  checksum   String   @db.VarChar(64)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+
+  gateway Gateway @relation(fields: [gatewayId], references: [id], onDelete: Cascade)
+
+  @@map("gateway_desired_states")
+}
+
+model GatewayActualState {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  gatewayId  String   @unique @map("gateway_id") @db.VarChar(36)
+  version    BigInt   @default(1)
+  stateJson  Json     @map("state_json")
+  status     String   @default("SYNCED") @db.VarChar(50)
+  errorMessage String? @map("error_message") @db.Text
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+
+  gateway Gateway @relation(fields: [gatewayId], references: [id], onDelete: Cascade)
+
+  @@map("gateway_actual_states")
+}

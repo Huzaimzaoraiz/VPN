@@ -1,0 +1,30 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    wireguard \
+    wireguard-tools \
+    openvswitch-switch \
+    nftables \
+    iproute2 \
+    procps \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY vpn_node/requirements.txt requirements.txt
+RUN python3 -m venv /app/venv && \
+    /app/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+COPY vpn_node/ /app/vpn_node/
+COPY proto/ /app/proto/
+
+ENV PATH="/app/venv/bin:$PATH"
+ENV PYTHONPATH=/app
+
+CMD ["sh", "-c", "python3 -m grpc_tools.protoc -I/app/proto --python_out=/app/vpn_node/src --grpc_python_out=/app/vpn_node/src /app/proto/vpn_node.proto && python3 -m vpn_node.src.main"]

@@ -1,0 +1,21 @@
+[Unit]
+Description=Multi-Tenant Overlay VPN Gateway Agent
+After=network.target openvswitch-switch.service
+Wants=openvswitch-switch.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/vpn-node
+EnvironmentFile=/etc/default/vpn-node
+ExecStart=/opt/vpn-node/venv/bin/python3 -m vpn_node.src.main
+Restart=always
+RestartSec=5s
+LimitNOFILE=65535
+
+# Linux Capabilities for Kernel Networking
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
