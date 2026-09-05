@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vpn-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: vpn_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: deployment/docker/Dockerfile.backend
+    container_name: vpn-controller
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/vpn_db
+      SECRET_KEY: dev-super-secret-key-min-32-chars-long-1234
+      GRPC_HOST: 0.0.0.0
+      GRPC_PORT: 50051
+    ports:
+      - "8000:8000"
+      - "50051:50051"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: deployment/docker/Dockerfile.frontend
+    container_name: vpn-dashboard
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+  vpn-node:
+    build:
+      context: .
+      dockerfile: deployment/docker/Dockerfile.vpn_node
+    container_name: vpn-gateway-node
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      CONTROLLER_GRPC_URL: backend:50051
+      NODE_ID: gateway-docker-01
+      HOSTNAME: gw-docker-01.vpn.internal
+      PUBLIC_IP: 127.0.0.1
+      LISTEN_PORT: 51820
+      REGION: local-docker
+      MOCK_NETWORKING: "true"
+    depends_on:
+      - backend
+
+
+volumes:
+  pgdata:

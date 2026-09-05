@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package vpn.vpn_node;
+
+service VpnNodeControlService {
+  // Agent registers identity and capabilities upon booting
+  rpc RegisterVpnNode (RegisterVpnNodeRequest) returns (RegisterVpnNodeResponse);
+
+  // Persistent streaming RPC where controller pushes desired states to agent
+  rpc WatchDesiredState (WatchDesiredStateRequest) returns (stream DesiredStateEnvelope);
+
+  // Agent acknowledges and reports actual reconciled state
+  rpc ReportActualState (ReportActualStateRequest) returns (ReportActualStateResponse);
+
+  // Periodic heartbeat reporting CPU, memory, active WireGuard peers, and version
+  rpc ReportHeartbeat (HeartbeatRequest) returns (HeartbeatResponse);
+}
+
+message RegisterVpnNodeRequest {
+  string node_id = 1;
+  string hostname = 2;
+  string public_key = 3;
+  string public_ip = 4;
+  int32 listen_port = 5;
+  string software_version = 6;
+  string region = 7;
+  int32 capacity = 8;
+}
+
+message RegisterVpnNodeResponse {
+  string gateway_id = 1;
+  bool registered = 2;
+  int64 initial_version = 3;
+}
+
+message WatchDesiredStateRequest {
+  string gateway_id = 1;
+  int64 current_version = 2;
+}
+
+message DesiredStateEnvelope {
+  string gateway_id = 1;
+  int64 version = 2;
+  string checksum = 3;
+  string state_json = 4; // Serialized DesiredState JSON payload
+}
+
+message ReportActualStateRequest {
+  string gateway_id = 1;
+  int64 version = 2;
+  string state_json = 3;
+  bool success = 4;
+  string error_message = 5;
+}
+
+message ReportActualStateResponse {
+  bool acknowledged = 1;
+}
+
+message HeartbeatRequest {
+  string gateway_id = 1;
+  float cpu_usage = 2;
+  float memory_usage = 3;
+  int32 active_peers = 4;
+  int64 bytes_rx = 5;
+  int64 bytes_tx = 6;
+  int64 last_reconciled_version = 7;
+}
+
+message HeartbeatResponse {
+  bool healthy = 1;
+  bool force_reconcile = 2;
+}

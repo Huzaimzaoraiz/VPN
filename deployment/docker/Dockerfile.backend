@@ -1,0 +1,27 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install system utilities (if any needed for build)
+RUN apk add --no-cache curl make gcc g++ python3
+
+# Install dependencies first for Docker caching
+COPY backend/package.json backend/package-lock.json* ./backend/
+WORKDIR /app/backend
+RUN npm ci || npm install
+
+# Copy proto definitions
+COPY proto/ /app/proto/
+
+# Copy backend source
+COPY backend/ ./
+RUN npx prisma generate
+RUN npm run build
+
+ENV NODE_ENV=production
+ENV PORT=8000
+ENV GRPC_PORT=50051
+
+EXPOSE 8000 50051
+
+CMD ["npm", "start"]
