@@ -19,6 +19,17 @@ const vpnNodeProto = protoDescriptor.vpn.vpn_node;
 // Map of gatewayId to ServerWritableStream
 const connectedNodes = new Map<string, grpc.ServerWritableStream<any, any>>();
 
+export interface GatewayTelemetry {
+  cpu_usage: number;
+  memory_usage: number;
+  active_peers: number;
+  bytes_rx: number;
+  bytes_tx: number;
+  last_heartbeat: Date;
+}
+
+export const gatewayTelemetryMap = new Map<string, GatewayTelemetry>();
+
 export const VpnNodeControlServiceImpl = {
   RegisterVpnNode: async (call: grpc.ServerUnaryCall<any, any>, callback: grpc.sendUnaryData<any>) => {
     try {
@@ -115,9 +126,20 @@ export const VpnNodeControlServiceImpl = {
   ReportHeartbeat: async (call: grpc.ServerUnaryCall<any, any>, callback: grpc.sendUnaryData<any>) => {
     try {
       const req = call.request;
+      const now = new Date();
+
+      gatewayTelemetryMap.set(req.gateway_id, {
+        cpu_usage: req.cpu_usage || 0,
+        memory_usage: req.memory_usage || 0,
+        active_peers: req.active_peers || 0,
+        bytes_rx: Number(req.bytes_rx) || 0,
+        bytes_tx: Number(req.bytes_tx) || 0,
+        last_heartbeat: now
+      });
+
       await prisma.gateway.update({
         where: { id: req.gateway_id },
-        data: { lastHeartbeat: new Date() }
+        data: { lastHeartbeat: now }
       });
       callback(null, { healthy: true, force_reconcile: false });
     } catch (error: any) {
@@ -132,11 +154,12 @@ export const VpnNodeControlServiceImpl = {
 export function pushDesiredStateToVpnNode(gatewayId: string, desiredState: any) {
   const stream = connectedNodes.get(gatewayId);
   if (stream) {
+    console.log(`Pushing new desired state v${desiredState.version} to active VPN node ${gatewayId}`);
     stream.write({
       gateway_id: gatewayId,
       version: desiredState.version,
       checksum: desiredState.checksum,
-      state_json: JSON.stringify(desiredState.stateJson)
+      state_json: typeof desiredState.stateJson === 'string' ? desiredState.stateJson : JSON.stringify(desiredState.stateJson)
     });
   }
 }

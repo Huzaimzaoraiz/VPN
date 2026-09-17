@@ -83,7 +83,13 @@ router.post('/', async (req: AuthRequest, res) => {
     await DesiredStateEngine.generateGatewayDesiredState(bestGateway.id);
   }
 
-  res.status(201).json(network);
+  res.status(201).json({
+    ...network,
+    vlan_id: network.vlanId,
+    device_count: 0,
+    assigned_gateway_id: bestGateway ? bestGateway.id : null,
+    assigned_gateway_hostname: bestGateway ? bestGateway.hostname : null,
+  });
 });
 
 router.get('/:id', async (req: AuthRequest, res) => {
@@ -165,7 +171,7 @@ router.post('/:id/devices', async (req: AuthRequest, res) => {
     gateway_endpoint: gateway ? `${gateway.publicIp}:${gateway.listenPort}` : 'WAITING_FOR_GATEWAY',
     gateway_public_key: gateway ? gateway.publicKey : 'WAITING_FOR_GATEWAY',
     dns_servers: ['1.1.1.1', '8.8.8.8'],
-    allowed_ips: [network.cidr],
+    allowed_ips: data.is_exit_node ? ['0.0.0.0/0'] : [network.cidr],
     keepalive: 25,
     wireguard_conf_text: '' // Frontend builds it
   });

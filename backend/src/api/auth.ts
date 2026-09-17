@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { prisma } from '../core/database';
 import { env } from '../config/env';
+import { requireAuth, AuthRequest } from './middlewares/auth';
 
 const router = Router();
 
@@ -73,6 +74,19 @@ router.post('/register', async (req, res) => {
   });
 
   res.status(201).json({ id: user.id, email: user.email });
+});
+
+router.get('/me', requireAuth, async (req: AuthRequest, res) => {
+  const user = req.user;
+  const tenants = await prisma.tenant.findMany({
+    where: { ownerId: user.id }
+  });
+  res.json({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    tenants: tenants.map(t => ({ id: t.id, name: t.name }))
+  });
 });
 
 export default router;
