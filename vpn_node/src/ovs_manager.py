@@ -12,6 +12,16 @@ class OVSManager:
         self.bridge = bridge
         self._mock_flows: dict[str, OvsFlowState] = {}
         self._mock_bridge_created = False
+        self._ovs_warned = False
+
+    def is_available(self) -> bool:
+        if node_settings.MOCK_NETWORKING:
+            return True
+        try:
+            check = subprocess.run(["ovs-vsctl", "--timeout=2", "show"], capture_output=True, text=True)
+            return check.returncode == 0
+        except Exception:
+            return False
 
     def ensure_bridge(self):
         """
@@ -20,6 +30,12 @@ class OVSManager:
         if node_settings.MOCK_NETWORKING:
             self._mock_bridge_created = True
             logger.info(f"[MOCK] OVS bridge {self.bridge} ensured.")
+            return
+
+        if not self.is_available():
+            if not self._ovs_warned:
+                logger.warning(f"Open vSwitch daemons (ovsdb-server/ovs-vswitchd) not running. Skipping OVS bridge {self.bridge}; kernel nftables provides tenant isolation.")
+                self._ovs_warned = True
             return
 
         try:
@@ -33,8 +49,6 @@ class OVSManager:
             subprocess.run(["ip", "link", "set", "up", "dev", self.bridge], check=True)
         except Exception as e:
             logger.error(f"Error ensuring OVS bridge {self.bridge}: {e}")
-            if not node_settings.MOCK_NETWORKING:
-                raise
 
     def install_flow(self, flow: OvsFlowState):
         """
@@ -46,6 +60,9 @@ class OVSManager:
             logger.info(f"[MOCK] Installed OVS Flow: table={flow.table}, priority={flow.priority}, match='{flow.match}', actions='{flow.actions}'")
             return
 
+        if not self.is_available():
+            return
+
         try:
             match_part = f"{flow.match}," if flow.match else ""
             flow_str = f"table={flow.table},priority={flow.priority},{match_part}actions={flow.actions}"
@@ -53,8 +70,7 @@ class OVSManager:
             subprocess.run(cmd, check=True)
             logger.info(f"Installed flow on {self.bridge}: {flow_str}")
         except Exception as e:
-            logger.error(f"Failed to install OVS flow on {self.bridge}: {e}")
-            raise
+            logger.warning(f"Could not install OVS flow on {self.bridge}: {e}")
 
     def remove_flow(self, match: str, table: int = 0):
         """
@@ -66,6 +82,9 @@ class OVSManager:
             logger.info(f"[MOCK] Removed OVS Flow matching '{match}' on table {table}")
             return
 
+        if not self.is_available():
+            return
+
         try:
             filter_str = f"table={table}"
             if match:
@@ -74,7 +93,7 @@ class OVSManager:
             subprocess.run(cmd, check=True)
             logger.info(f"Removed flows from {self.bridge}: {filter_str}")
         except Exception as e:
-            logger.error(f"Failed to delete flow from {self.bridge}: {e}")
+            logger.warning(f"Could not delete flow from {self.bridge}: {e}")
 
     def inspect_actual_flows(self) -> List[OvsFlowState]:
         """
@@ -82,6 +101,9 @@ class OVSManager:
         """
         if node_settings.MOCK_NETWORKING:
             return list(self._mock_flows.values())
+
+        if not self.is_available():
+            return []
 
         flows = []
         try:

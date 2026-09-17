@@ -28,6 +28,7 @@ export class DesiredStateEngine {
     const customRoutes: any[] = [];
     const firewallRules: any[] = [];
     const isolatedCidrs: string[] = [];
+    const gatewayAddresses: string[] = [];
 
     // Default OVS flow: drop
     ovsFlows.push({ table: 0, priority: 0, match: "", actions: "drop" });
@@ -35,6 +36,8 @@ export class DesiredStateEngine {
     for (const net of assignedNetworks) {
       isolatedCidrs.push(net.cidr);
       const gatewayVirtualIp = IPAMService.getGatewayIp(net.cidr);
+      const mask = net.cidr.split('/')[1] || '24';
+      gatewayAddresses.push(`${gatewayVirtualIp}/${mask}`);
 
       ovsTenants.push({
         network_id: net.id,
@@ -101,6 +104,7 @@ export class DesiredStateEngine {
       wireguard: {
         interface: "wg0",
         listen_port: gateway.listenPort,
+        addresses: gatewayAddresses,
         peers: wgPeers
       },
       ovs: {

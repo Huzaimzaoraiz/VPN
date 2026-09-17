@@ -54,10 +54,21 @@ class VPNAgentDaemon:
                 keepalive=p.get("keepalive", 25)
             ) for p in wg_data.get("peers", [])
         ]
+        wg_addresses = wg_data.get("addresses", [])
+        if not wg_addresses:
+            # Fallback: extract from ovs tenants if wireguard.addresses not explicitly present
+            for t in data.get("ovs", {}).get("tenants", []):
+                gw_ip = t.get("gateway_ip")
+                cidr = t.get("cidr", "")
+                mask = cidr.split("/")[1] if "/" in cidr else "24"
+                if gw_ip:
+                    wg_addresses.append(f"{gw_ip}/{mask}")
+
         wg_state = WireguardInterfaceState(
             interface=wg_data.get("interface", "wg0"),
             listen_port=wg_data.get("listen_port", 51820),
             public_key=self.identity.public_key,
+            addresses=wg_addresses,
             peers=peers
         )
 
@@ -195,7 +206,21 @@ class VPNAgentDaemon:
     def stop(self):
         self.running = False
 
+def ensure_ip_forwarding():
+    if node_settings.MOCK_NETWORKING:
+        return
+    try:
+        with open("/proc/sys/net/ipv4/ip_forward", "r+") as f:
+            val = f.read().strip()
+            if val != "1":
+                f.seek(0)
+                f.write("1\n")
+                logger.info("Enabled IPv4 kernel packet forwarding (/proc/sys/net/ipv4/ip_forward = 1)")
+    except Exception as e:
+        logger.warning(f"Could not automatically set net.ipv4.ip_forward: {e}. Ensure it is enabled on host sysctl.")
+
 async def main():
+    ensure_ip_forwarding()
     agent = VPNAgentDaemon()
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):

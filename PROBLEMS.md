@@ -210,12 +210,11 @@ This document details all known architectural flaws, software bugs, environment 
 ## 8. Actionable Remediation Checklist
 
 - [x] **1. Fix Docker Backend Startup**: Added `npx prisma db push` before `npm start` in `deployment/docker/Dockerfile.backend`.
-- [ ] **2. Fix WireGuard IPAM Assignment**: (Requires VM) Update `vpn_node/src/wireguard_manager.py` to assign gateway virtual IP to `wg0`.
+- [x] **2. Fix WireGuard IPAM Assignment**: Updated `desired_state.ts` to compute gateway addresses and updated `wireguard_manager.py` to assign and synchronize gateway virtual IPs (e.g. `10.100.0.1/24`) on `wg0`.
 - [x] **3. Wire Desired State Push**: In `backend/src/orchestration/desired_state.ts`, invoked `pushDesiredStateToVpnNode()` to push updates in real-time down the gRPC stream.
 - [x] **4. Implement Missing API Endpoints**: Added `POST /api/v1/gateways/:id/failover` and `GET /api/v1/auth/me` to the Express backend.
 - [x] **5. Normalize Gateway API Output**: Serialized Prisma models into snake_case and mapped live telemetry in `backend/src/api/gateways.ts`.
-- [ ] **6. Resolve OVS Architecture**: (Requires VM) Tunnel WireGuard through TAP / Geneve into `br-vpn` or switch to nftables-only isolation.
+- [x] **6. Resolve OVS / Linux Networking Architecture**: Made OVS operations resilient to prevent daemon crashes, relied on kernel `nftables` for isolation/NAT, fixed Netlink point-to-point routes, auto-detected WAN interface (e.g. `ens5` on AWS EC2), and auto-enabled kernel IPv4 forwarding.
 - [x] **7. Re-generate Protobuf Stubs**: Pre-generated Python stubs in `vpn_node/src/` and fixed relative import handling for standalone execution.
 - [x] **8. Fix Frontend Dependencies**: Recreated symlinks in `frontend/node_modules/.bin` so `npm run build` succeeds cleanly.
 - [x] **9. Environment & Port Alignment**: Added `JWT_SECRET` and mapped UDP port `51820/udp` and port `5173` in `docker-compose.yml`.
-

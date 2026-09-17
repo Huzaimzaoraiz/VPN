@@ -113,3 +113,35 @@ def test_reconciler_anti_drift_restores_deleted_resources(reconciler):
     healed_actual = reconciler.inspect_actual_state()
     assert len(healed_actual.wireguard.peers) == 1
     assert len(healed_actual.ovs.flows) == 1
+
+def test_reconciler_gateway_ip_and_routes(reconciler):
+    peer1 = WireguardPeerState(
+        device_id="d1",
+        public_key="pubkey_gw_test=",
+        allowed_ips=["10.100.0.10/32"]
+    )
+    desired = AgentFullState(
+        version=2,
+        gateway_id="gw-1",
+        wireguard=WireguardInterfaceState(
+            interface="wg0",
+            listen_port=51820,
+            public_key="pubkey_gw",
+            peers=[peer1],
+            addresses=["10.100.0.1/24", "10.100.1.1/24"]
+        ),
+        ovs=OvsState("br-vpn", [], []),
+        routes=[
+            RouteState(destination="10.100.0.0/24", next_hop="", interface="wg0"),
+            RouteState(destination="192.168.1.0/24", next_hop="10.100.0.10", interface="wg0")
+        ],
+        firewall=FirewallState()
+    )
+
+    success, err = reconciler.reconcile(desired, "mock_priv_key")
+    assert success is True
+    assert err == ""
+
+    actual = reconciler.inspect_actual_state()
+    assert len(actual.routes) == 2
+

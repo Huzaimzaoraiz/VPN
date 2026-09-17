@@ -18,6 +18,7 @@ class WireguardInterfaceState:
     listen_port: int
     public_key: str
     peers: List[WireguardPeerState] = field(default_factory=list)
+    addresses: List[str] = field(default_factory=list)
 
 @dataclass
 class OvsTenantState:

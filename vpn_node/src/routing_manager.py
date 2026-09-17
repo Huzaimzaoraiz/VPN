@@ -26,8 +26,17 @@ class RoutingManager:
                     logger.warning(f"Interface {route.interface} not found when adding route.")
                     return
                 oif = idx[0]
-                ipr.route("replace", dst=route.destination, gateway=route.next_hop, oif=oif)
-                logger.info(f"Installed route: {route.destination} via {route.next_hop} on {route.interface}")
+                # WireGuard interfaces are point-to-point (NOARP). Specifying next-hop gateway causes EINVAL.
+                if route.interface.startswith("wg") or not route.next_hop:
+                    ipr.route("replace", dst=route.destination, oif=oif)
+                    logger.info(f"Installed WireGuard interface route: {route.destination} dev {route.interface}")
+                else:
+                    try:
+                        ipr.route("replace", dst=route.destination, gateway=route.next_hop, oif=oif)
+                        logger.info(f"Installed route: {route.destination} via {route.next_hop} on {route.interface}")
+                    except Exception:
+                        ipr.route("replace", dst=route.destination, oif=oif)
+                        logger.info(f"Installed route: {route.destination} dev {route.interface}")
         except Exception as e:
             logger.error(f"Failed to add route {route.destination}: {e}")
             raise
@@ -71,8 +80,8 @@ class RoutingManager:
                     if oif == dev_idx:
                         dst = r.get_attr("RTA_DST")
                         dst_len = r.get("dst_len", 32)
-                        gateway = r.get_attr("RTA_GATEWAY")
-                        if dst and gateway:
+                        gateway = r.get_attr("RTA_GATEWAY") or ""
+                        if dst:
                             routes.append(RouteState(
                                 destination=f"{dst}/{dst_len}",
                                 next_hop=gateway,

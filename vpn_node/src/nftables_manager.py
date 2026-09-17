@@ -44,9 +44,21 @@ class NftablesManager:
 
         # 4. Custom user firewall rules
         for rule in firewall.rules:
-            port_clause = f" th dport {rule.port}" if rule.port else ""
-            proto_clause = f" ip protocol {rule.protocol}" if rule.protocol != "all" else ""
             action = rule.action.lower()
+            proto = rule.protocol.lower() if rule.protocol else "all"
+            if proto in ("tcp", "udp"):
+                proto_clause = f" {proto}"
+                port_clause = f" dport {rule.port}" if rule.port else ""
+            elif rule.port:
+                proto_clause = " meta l4proto {tcp, udp}"
+                port_clause = f" th dport {rule.port}"
+            elif proto != "all":
+                proto_clause = f" ip protocol {proto}"
+                port_clause = ""
+            else:
+                proto_clause = ""
+                port_clause = ""
+
             lines.append(f"        ip saddr {rule.source_cidr} ip daddr {rule.destination_cidr}{proto_clause}{port_clause} {action}")
 
         lines.extend([

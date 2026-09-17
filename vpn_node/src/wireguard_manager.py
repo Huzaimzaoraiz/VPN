@@ -11,12 +11,13 @@ class WireGuardManager:
         self.interface = interface
         self._mock_peers: dict[str, WireguardPeerState] = {}
 
-    def ensure_interface(self, listen_port: int, private_key: str):
+    def ensure_interface(self, listen_port: int, private_key: str, addresses: List[str] = None):
         """
-        Creates and brings up the WireGuard interface using kernel netlink / ip link.
+        Creates and brings up the WireGuard interface using kernel netlink / ip link,
+        and assigns gateway virtual IP addresses.
         """
         if node_settings.MOCK_NETWORKING:
-            logger.info(f"[MOCK] WireGuard interface {self.interface} created on port {listen_port}")
+            logger.info(f"[MOCK] WireGuard interface {self.interface} created on port {listen_port} (addresses: {addresses})")
             return
 
         try:
@@ -32,10 +33,42 @@ class WireGuardManager:
             # Bring interface UP
             subprocess.run(["ip", "link", "set", "up", "dev", self.interface], check=True)
             logger.info(f"WireGuard interface {self.interface} is UP on port {listen_port}")
+
+            if addresses:
+                self.sync_addresses(addresses)
         except Exception as e:
             logger.error(f"Error ensuring WireGuard interface: {e}")
             if not node_settings.MOCK_NETWORKING:
                 raise
+
+    def sync_addresses(self, desired_addresses: List[str]):
+        """
+        Idempotently synchronizes IP addresses assigned to the WireGuard interface.
+        """
+        if node_settings.MOCK_NETWORKING:
+            logger.info(f"[MOCK] Synchronized addresses on {self.interface}: {desired_addresses}")
+            return
+
+        try:
+            res = subprocess.run(["ip", "-4", "addr", "show", "dev", self.interface], capture_output=True, text=True)
+            current_addrs = set()
+            if res.returncode == 0:
+                for line in res.stdout.splitlines():
+                    parts = line.strip().split()
+                    if len(parts) >= 2 and parts[0] == "inet":
+                        current_addrs.add(parts[1])
+
+            for addr in desired_addresses:
+                if addr not in current_addrs:
+                    logger.info(f"Assigning gateway virtual IP {addr} to {self.interface}")
+                    subprocess.run(["ip", "addr", "add", addr, "dev", self.interface], check=True)
+
+            for addr in current_addrs:
+                if addr not in desired_addresses:
+                    logger.info(f"Removing obsolete virtual IP {addr} from {self.interface}")
+                    subprocess.run(["ip", "addr", "del", addr, "dev", self.interface], check=False)
+        except Exception as e:
+            logger.error(f"Error synchronizing addresses on {self.interface}: {e}")
 
     def add_or_update_peer(self, peer: WireguardPeerState):
         """
