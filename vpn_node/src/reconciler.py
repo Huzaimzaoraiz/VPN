@@ -135,7 +135,8 @@ class Reconciler:
             logger.info(f"Reconciling state version {desired.version} (current: {self.last_reconciled_version})")
 
             # 1. Base infrastructure
-            self.wg.ensure_interface(desired.wireguard.listen_port, private_key)
+            addresses = getattr(desired.wireguard, 'addresses', [])
+            self.wg.ensure_interface(desired.wireguard.listen_port, private_key, addresses)
             self.ovs.ensure_bridge()
 
             # 2. Inspect actual state and calculate diff

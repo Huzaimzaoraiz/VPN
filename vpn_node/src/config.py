@@ -1,5 +1,22 @@
 import os
+import subprocess
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+def detect_default_wan_interface() -> str:
+    env_wan = os.getenv("WAN_INTERFACE")
+    if env_wan:
+        return env_wan
+    try:
+        res = subprocess.run(["ip", "route", "show", "default"], capture_output=True, text=True)
+        if res.returncode == 0 and res.stdout:
+            parts = res.stdout.strip().split()
+            if "dev" in parts:
+                dev_idx = parts.index("dev")
+                if dev_idx + 1 < len(parts):
+                    return parts[dev_idx + 1]
+    except Exception:
+        pass
+    return "eth0"
 
 class VpnNodeSettings(BaseSettings):
     NODE_ID: str = os.getenv("NODE_ID", "gateway-us-east-01")
@@ -17,8 +34,8 @@ class VpnNodeSettings(BaseSettings):
     # Open vSwitch configuration
     OVS_BRIDGE: str = "br-vpn"
     
-    # WAN Interface for egress NAT
-    WAN_INTERFACE: str = os.getenv("WAN_INTERFACE", "eth0")
+    # WAN Interface for egress NAT (auto-detected from default route on AWS EC2/Linux)
+    WAN_INTERFACE: str = os.getenv("WAN_INTERFACE") or detect_default_wan_interface()
     
     # Operating mode: mock if running on non-Linux kernel for local testing
     MOCK_NETWORKING: bool = os.getenv("MOCK_NETWORKING", "false").lower() in ("true", "1", "yes")
