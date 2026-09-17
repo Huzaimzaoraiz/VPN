@@ -45,6 +45,7 @@ services:
     container_name: vpn-dashboard
     restart: unless-stopped
     ports:
+      - "80:80"
       - "5173:80"
       - "8081:80"
     depends_on:
@@ -65,10 +66,10 @@ services:
       CONTROLLER_GRPC_URL: backend:50051
       NODE_ID: gateway-docker-01
       HOSTNAME: gw-docker-01.vpn.internal
-      PUBLIC_IP: 127.0.0.1
+      PUBLIC_IP: ${PUBLIC_IP:-127.0.0.1}
       LISTEN_PORT: 51820
-      REGION: local-docker
-      MOCK_NETWORKING: "true"
+      REGION: ${REGION:-us-east-1}
+      MOCK_NETWORKING: ${MOCK_NETWORKING:-false}
     depends_on:
       - backend
 
