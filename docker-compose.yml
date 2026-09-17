@@ -27,6 +27,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/vpn_db
+      JWT_SECRET: dev-super-secret-key-min-32-chars-long-1234
       SECRET_KEY: dev-super-secret-key-min-32-chars-long-1234
       GRPC_HOST: 0.0.0.0
       GRPC_PORT: 50051
@@ -44,6 +45,7 @@ services:
     container_name: vpn-dashboard
     restart: unless-stopped
     ports:
+      - "5173:80"
       - "8081:80"
     depends_on:
       - backend
@@ -57,6 +59,8 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
+    ports:
+      - "51820:51820/udp"
     environment:
       CONTROLLER_GRPC_URL: backend:50051
       NODE_ID: gateway-docker-01

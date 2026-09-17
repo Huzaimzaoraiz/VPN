@@ -27,4 +27,4 @@ COPY proto/ /app/proto/
 ENV PATH="/app/venv/bin:$PATH"
 ENV PYTHONPATH=/app:/app/vpn_node/src
 
-CMD ["sh", "-c", "python3 -m grpc_tools.protoc -I/app/proto --python_out=/app/vpn_node/src --grpc_python_out=/app/vpn_node/src /app/proto/vpn_node.proto && python3 -m vpn_node.src.main"]
+CMD ["python3", "-m", "vpn_node.src.main"]

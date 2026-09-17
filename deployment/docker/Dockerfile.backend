@@ -24,4 +24,4 @@ ENV GRPC_PORT=50051
 
 EXPOSE 8000 50051
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx prisma db push && npm start"]

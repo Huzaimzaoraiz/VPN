@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { prisma } from '../core/database';
 import { IPAMService } from '../services/ipam_service';
+import { pushDesiredStateToVpnNode } from '../grpc/service';
 
 export class DesiredStateEngine {
   /**
@@ -137,6 +138,13 @@ export class DesiredStateEngine {
         }
       });
     }
+
+    // Push desired state in real-time to active gRPC stream if node is connected
+    pushDesiredStateToVpnNode(gatewayId, {
+      version: nextVersion,
+      checksum,
+      stateJson: stateDict
+    });
 
     return stateDict;
   }
