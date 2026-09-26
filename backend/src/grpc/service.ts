@@ -33,7 +33,31 @@ export const gatewayTelemetryMap = new Map<string, GatewayTelemetry>();
 export const VpnNodeControlServiceImpl = {
   RegisterVpnNode: async (call: grpc.ServerUnaryCall<any, any>, callback: grpc.sendUnaryData<any>) => {
     try {
+      const metadata = call.metadata.get('authorization');
+      const incomingToken = metadata.length > 0 ? (metadata[0] as string).replace('Bearer ', '') : null;
+
+      if (!incomingToken) {
+        return callback({ code: grpc.status.UNAUTHENTICATED, details: 'Missing NODE_TOKEN' }, null);
+      }
+
       const req = call.request;
+
+      // Look up the token in the database
+      const validToken = await prisma.gatewayToken.findUnique({
+        where: { token: incomingToken }
+      });
+
+      if (!validToken) {
+        return callback({ code: grpc.status.UNAUTHENTICATED, details: 'Invalid Token' }, null);
+      }
+
+      if (validToken.isUsed) {
+        if (validToken.nodeId !== req.node_id) {
+          return callback({ code: grpc.status.UNAUTHENTICATED, details: 'Token already used by another Node' }, null);
+        }
+        // Token is used but belongs to this specific node ID - it's a restart, allow it
+      }
+
       let gateway = await prisma.gateway.findUnique({ where: { nodeId: req.node_id } });
       
       if (!gateway) {
@@ -58,6 +82,17 @@ export const VpnNodeControlServiceImpl = {
             listenPort: req.listen_port,
             capacity: req.capacity,
             status: "READY"
+          }
+        });
+      }
+
+      // Burn the token (mark as used and bind to this nodeId)
+      if (!validToken.isUsed) {
+        await prisma.gatewayToken.update({
+          where: { id: validToken.id },
+          data: {
+            isUsed: true,
+            nodeId: req.node_id
           }
         });
       }

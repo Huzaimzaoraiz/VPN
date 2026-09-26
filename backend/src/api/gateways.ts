@@ -6,8 +6,24 @@ import { DesiredStateEngine } from '../orchestration/desired_state';
 import { GatewayScheduler } from '../orchestration/scheduler';
 import { gatewayTelemetryMap } from '../grpc/service';
 
+import * as crypto from 'crypto';
+
 const router = Router();
 router.use(requireAuth);
+
+router.post('/generate-token', async (req: AuthRequest, res) => {
+  const rawToken = crypto.randomBytes(24).toString('hex');
+  const tokenString = `vpn_tok_${rawToken}`;
+  
+  await prisma.gatewayToken.create({
+    data: {
+      token: tokenString,
+      isUsed: false
+    }
+  });
+  
+  res.status(201).json({ token: tokenString });
+});
 
 function formatGateway(gw: any) {
   const telemetry = gatewayTelemetryMap.get(gw.id) || {

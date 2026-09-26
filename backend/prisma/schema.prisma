@@ -153,3 +153,13 @@ model GatewayActualState {
 
   @@map("gateway_actual_states")
 }
+
+model GatewayToken {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  token     String   @unique @db.VarChar(64)
+  isUsed    Boolean  @default(false) @map("is_used")
+  nodeId    String?  @unique @map("node_id") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("gateway_tokens")
+}

@@ -33,7 +33,8 @@ class ControllerClient:
             region=self.identity.region,
             capacity=1000
         )
-        resp = await self.stub.RegisterVpnNode(req)
+        metadata = (('authorization', f'Bearer {node_settings.NODE_TOKEN}'),)
+        resp = await self.stub.RegisterVpnNode(req, metadata=metadata)
         self.gateway_id = resp.gateway_id
         logger.info(f"Registered successfully with Controller. Assigned Gateway ID: {self.gateway_id}, initial version: {resp.initial_version}")
         return resp.initial_version
