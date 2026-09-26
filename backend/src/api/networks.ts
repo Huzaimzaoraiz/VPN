@@ -57,8 +57,9 @@ router.post('/', async (req: AuthRequest, res) => {
   });
   const vlanId = (maxVlan._max.vlanId || 99) + 1;
   
-  const finalCidr = data.cidr || `10.${vlanId % 255}.0.0/24`;
-
+  const octet2 = Math.floor(vlanId / 255) % 255;
+  const octet3 = vlanId % 255;
+  const finalCidr = data.cidr || `10.${Math.max(1, octet2)}.${octet3}.0/24`;
   const network = await prisma.network.create({
     data: {
       name: data.name,
@@ -140,22 +141,43 @@ router.post('/:id/devices', async (req: AuthRequest, res) => {
     return;
   }
 
-  const usedIps = network.devices.map(d => d.vpnIp);
-  const vpnIp = IPAMService.allocateNextIp(network.cidr, usedIps);
-  if (!vpnIp) {
-    res.status(400).json({ detail: 'Network CIDR exhausted' });
-    return;
+  let device = null;
+  let attempts = 0;
+
+  while (attempts < 3) {
+    try {
+      const currentDevices = await prisma.device.findMany({ where: { networkId: network.id } });
+      const usedIps = currentDevices.map(d => d.vpnIp);
+      const vpnIp = IPAMService.allocateNextIp(network.cidr, usedIps);
+      
+      if (!vpnIp) {
+        res.status(400).json({ detail: 'Network CIDR exhausted' });
+        return;
+      }
+
+      device = await prisma.device.create({
+        data: {
+          name: data.name,
+          publicKey: data.public_key,
+          vpnIp,
+          isExitNode: data.is_exit_node,
+          networkId: network.id
+        }
+      });
+      break; // Success
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        attempts++;
+        continue;
+      }
+      throw error;
+    }
   }
 
-  const device = await prisma.device.create({
-    data: {
-      name: data.name,
-      publicKey: data.public_key,
-      vpnIp,
-      isExitNode: data.is_exit_node,
-      networkId: network.id
-    }
-  });
+  if (!device) {
+    res.status(500).json({ detail: 'Failed to allocate IP due to concurrency. Try again.' });
+    return;
+  }
 
   for (const assignment of network.assignments) {
     await DesiredStateEngine.generateGatewayDesiredState(assignment.gatewayId);

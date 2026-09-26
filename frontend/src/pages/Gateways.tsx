@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Server, Activity, AlertTriangle, RefreshCw, Cpu, Database } from 'lucide-react'
+import { Server, Activity, AlertTriangle, RefreshCw, Cpu, Database, Trash2 } from 'lucide-react'
 import { api } from '../api/client'
 import { Gateway } from '../types'
 
@@ -49,6 +49,18 @@ export const Gateways: React.FC = () => {
       setGeneratedToken(res.token)
     } catch (err: any) {
       alert(err.message || 'Failed to generate token')
+    }
+  }
+
+  const handleDeleteGateway = async (gatewayId: string) => {
+    if (!confirm('Are you sure you want to permanently delete this Gateway? This will delete its token and cannot be undone.')) {
+      return
+    }
+    try {
+      await api.deleteGateway(gatewayId)
+      loadGateways()
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete gateway')
     }
   }
 
@@ -126,15 +138,26 @@ export const Gateways: React.FC = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleFailover(gw.id)}
-                    disabled={failingOver === gw.id}
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all flex items-center space-x-1.5"
-                    title="Simulate node failure and trigger network migration"
-                  >
-                    <AlertTriangle className="w-3.5 h-3.5" />
-                    <span>{failingOver === gw.id ? 'Failing over...' : 'Trigger Failover'}</span>
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleFailover(gw.id)}
+                      disabled={failingOver === gw.id}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all flex items-center space-x-1.5"
+                      title="Simulate node failure and trigger network migration"
+                    >
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      <span>{failingOver === gw.id ? 'Failing over...' : 'Trigger Failover'}</span>
+                    </button>
+                    {!isReady && (
+                      <button
+                        onClick={() => handleDeleteGateway(gw.id)}
+                        className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition-all"
+                        title="Delete Gateway permanently"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Gateway Details */}

@@ -11,6 +11,7 @@ import * as crypto from 'crypto';
 const router = Router();
 router.use(requireAuth);
 
+const activeFailovers = new Set<string>();
 router.post('/generate-token', async (req: AuthRequest, res) => {
   const rawToken = crypto.randomBytes(24).toString('hex');
   const tokenString = `vpn_tok_${rawToken}`;
@@ -103,7 +104,7 @@ router.get('/:id', async (req: AuthRequest, res) => {
   res.json(formatGateway(gateway));
 });
 
-router.post('/:id/failover', async (req: AuthRequest, res) => {
+router.delete('/:id', async (req: AuthRequest, res) => {
   const gatewayId = req.params.id;
   const gateway = await prisma.gateway.findUnique({ where: { id: gatewayId } });
   if (!gateway) {
@@ -111,7 +112,36 @@ router.post('/:id/failover', async (req: AuthRequest, res) => {
     return;
   }
 
-  // Mark this gateway degraded / failed
+  const assignments = await prisma.gatewayAssignment.findMany({ where: { gatewayId } });
+  if (assignments.length > 0) {
+    res.status(400).json({ detail: 'Cannot delete gateway. It has active network assignments. Trigger a failover first.' });
+    return;
+  }
+
+  await prisma.gatewayDesiredState.deleteMany({ where: { gatewayId } });
+  await prisma.gatewayToken.deleteMany({ where: { nodeId: gateway.nodeId } });
+  await prisma.gateway.delete({ where: { id: gatewayId } });
+
+  res.status(204).send();
+});
+
+router.post('/:id/failover', async (req: AuthRequest, res) => {
+  const gatewayId = req.params.id;
+
+  if (activeFailovers.has(gatewayId)) {
+    res.status(429).json({ detail: 'A failover is already in progress for this gateway.' });
+    return;
+  }
+
+  activeFailovers.add(gatewayId);
+  try {
+    const gateway = await prisma.gateway.findUnique({ where: { id: gatewayId } });
+    if (!gateway) {
+      res.status(404).json({ detail: 'Gateway not found' });
+      return;
+    }
+
+    // Mark this gateway degraded / failed
   await prisma.gateway.update({
     where: { id: gatewayId },
     data: { status: 'DEGRADED' }
@@ -153,6 +183,9 @@ router.post('/:id/failover', async (req: AuthRequest, res) => {
     failed_gateway_id: gatewayId,
     target_gateway_id: bestOtherGateway ? bestOtherGateway.id : null
   });
+  } finally {
+    activeFailovers.delete(gatewayId);
+  }
 });
 
 router.get('/:id/health', async (req: AuthRequest, res) => {
