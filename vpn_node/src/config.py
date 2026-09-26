@@ -25,6 +25,7 @@ class VpnNodeSettings(BaseSettings):
     PUBLIC_IP: str = os.getenv("PUBLIC_IP", "127.0.0.1")
     LISTEN_PORT: int = int(os.getenv("LISTEN_PORT", "51820"))
     REGION: str = os.getenv("REGION", "us-east-1")
+    NODE_TOKEN: str = os.getenv("NODE_TOKEN", "")
     SOFTWARE_VERSION: str = "1.0.0"
     
     # WireGuard configuration

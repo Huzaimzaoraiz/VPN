@@ -7,7 +7,7 @@ export const Gateways: React.FC = () => {
   const [gateways, setGateways] = useState<Gateway[]>([])
   const [loading, setLoading] = useState(true)
   const [failingOver, setFailingOver] = useState<string | null>(null)
-
+  const [generatedToken, setGeneratedToken] = useState<string | null>(null)
   const loadGateways = async () => {
     try {
       setLoading(true)
@@ -43,6 +43,15 @@ export const Gateways: React.FC = () => {
     }
   }
 
+  const handleGenerateToken = async () => {
+    try {
+      const res = await api.generateToken()
+      setGeneratedToken(res.token)
+    } catch (err: any) {
+      alert(err.message || 'Failed to generate token')
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -52,11 +61,26 @@ export const Gateways: React.FC = () => {
             Data-plane compute instances executing autonomous desired-state reconciliation for WireGuard, OVS, and nftables
           </p>
         </div>
-        <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
-          <Activity className="w-4 h-4 text-emerald-400" />
-          <span>Live Telemetry Polling (5s)</span>
+        <div className="flex flex-col items-end space-y-3">
+          <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
+            <Activity className="w-4 h-4 text-emerald-400" />
+            <span>Live Telemetry Polling (5s)</span>
+          </div>
+          <button
+            onClick={handleGenerateToken}
+            className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-brand-500/20"
+          >
+            Deploy New Node
+          </button>
         </div>
       </div>
+
+      {generatedToken && (
+        <div className="p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 text-slate-300">
+          <p className="text-sm mb-2"><strong>New Node Token Generated!</strong> Copy this and set it as <code className="text-brand-300">NODE_TOKEN</code> in your server's .env file before starting the agent.</p>
+          <code className="px-3 py-2 bg-slate-950 rounded border border-slate-800 text-emerald-400 font-mono text-sm block select-all overflow-x-auto">{generatedToken}</code>
+        </div>
+      )}
 
       {loading && gateways.length === 0 ? (
         <div className="flex items-center justify-center py-20">

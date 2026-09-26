@@ -107,6 +107,7 @@ export const api = {
 
   // Gateways
   getGateways: () => request<Gateway[]>('/gateways'),
+  generateToken: () => request<{token: string}>('/gateways/generate-token', { method: 'POST' }),
   getGatewayHealth: (id: string) => request<GatewayHealth>(`/gateways/${id}/health`),
   triggerFailover: (id: string) =>
     request<any>(`/gateways/${id}/failover`, { method: 'POST' }),
