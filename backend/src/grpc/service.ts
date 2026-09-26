@@ -2,6 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import path from 'path';
 import { prisma } from '../core/database';
+import { DesiredStateEngine } from '../orchestration/desired_state';
 
 const PROTO_PATH = path.resolve(__dirname, '../../../proto/vpn_node.proto');
 
@@ -96,6 +97,29 @@ export const VpnNodeControlServiceImpl = {
           }
         });
       }
+
+      // --- AUTOMATED NETWORK RECOVERY ---
+      // Sweep for any unassigned networks and assign them to this gateway
+      const strandedNetworks = await prisma.network.findMany({
+        where: {
+          assignments: { none: {} }
+        }
+      });
+
+      if (strandedNetworks.length > 0) {
+        console.log(`[Recovery] Found ${strandedNetworks.length} stranded networks. Assigning to gateway ${gateway.hostname}...`);
+        for (const network of strandedNetworks) {
+          await prisma.gatewayAssignment.create({
+            data: {
+              networkId: network.id,
+              gatewayId: gateway.id
+            }
+          });
+        }
+        // Generate desired state so the gateway instantly configures the rescued networks
+        await DesiredStateEngine.generateGatewayDesiredState(gateway.id);
+      }
+      // ----------------------------------
 
       callback(null, {
         gateway_id: gateway.id,
