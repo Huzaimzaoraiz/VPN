@@ -18,7 +18,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 export function App() {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col selection:bg-brand-500 selection:text-black">
+    <div className="min-h-screen bg-slate-950 flex flex-col text-slate-300">
       <Navbar />
       <main className="flex-1">
         <Routes>
