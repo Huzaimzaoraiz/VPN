@@ -124,7 +124,7 @@ export const Register: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
+              className="w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm tracking-wide transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
             >
               {loading ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
@@ -162,7 +162,7 @@ export const Register: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || otp.length !== 6}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm tracking-wide transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : (
                   <>
