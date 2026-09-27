@@ -118,6 +118,32 @@ router.get('/:id', async (req: AuthRequest, res) => {
   });
 });
 
+router.delete('/:id', async (req: AuthRequest, res) => {
+  const tenantIds = await getUserTenantIds(req.user.id);
+  const network = await prisma.network.findFirst({
+    where: { id: req.params.id, tenantId: { in: tenantIds } },
+    include: { assignments: true }
+  });
+
+  if (!network) {
+    res.status(404).json({ detail: 'Network not found' });
+    return;
+  }
+
+  // Delete the network (Cascade will handle devices, routes, etc.)
+  await prisma.network.delete({
+    where: { id: network.id }
+  });
+
+  // Trigger Desired State rebuild for any gateways that were hosting this network
+  // so they know to tear down the network namespace and wireguard interfaces.
+  for (const assignment of network.assignments) {
+    await DesiredStateEngine.generateGatewayDesiredState(assignment.gatewayId);
+  }
+
+  res.status(204).send();
+});
+
 // --- NESTED ROUTES FOR NETWORK SUB-RESOURCES ---
 
 const createDeviceSchema = z.object({
