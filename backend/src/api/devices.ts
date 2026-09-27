@@ -7,13 +7,10 @@ const router = Router();
 router.use(requireAuth);
 
 router.delete('/:id', async (req: AuthRequest, res) => {
-  const tenants = await prisma.tenant.findMany({ where: { ownerId: req.user.id } });
-  const tenantIds = tenants.map(t => t.id);
-
   const device = await prisma.device.findFirst({
     where: { 
       id: req.params.id,
-      network: { tenantId: { in: tenantIds } }
+      network: { ownerId: req.user.id }
     },
     include: { network: { include: { assignments: true } } }
   });

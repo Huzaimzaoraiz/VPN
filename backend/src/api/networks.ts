@@ -9,10 +9,6 @@ import { IPAMService } from '../services/ipam_service';
 const router = Router();
 router.use(requireAuth);
 
-async function getUserTenantIds(userId: string) {
-  const tenants = await prisma.tenant.findMany({ where: { ownerId: userId } });
-  return tenants.map(t => t.id);
-}
 
 const cidrRegex = /^([0-9]{1,3}\.){3}[0-9]{1,3}\/([0-9]|[1-2][0-9]|3[0-2])$/;
 const wgKeyRegex = /^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=$/;
@@ -23,10 +19,8 @@ const createNetworkSchema = z.object({
 });
 
 router.get('/', async (req: AuthRequest, res) => {
-  const tenantIds = await getUserTenantIds(req.user.id);
-
   const networks = await prisma.network.findMany({
-    where: { tenantId: { in: tenantIds } },
+    where: { ownerId: req.user.id },
     include: { devices: true, assignments: { include: { gateway: true } } }
   });
   res.json(networks.map(n => ({
@@ -41,13 +35,6 @@ router.get('/', async (req: AuthRequest, res) => {
 router.post('/', async (req: AuthRequest, res) => {
   const data = createNetworkSchema.parse(req.body);
   const user = req.user;
-
-  const tenants = await prisma.tenant.findMany({ where: { ownerId: user.id } });
-  if (tenants.length === 0) {
-    res.status(403).json({ detail: 'No tenants found for this user.' });
-    return;
-  }
-  const tenant = tenants[0]; // For simplicity, pick the first tenant
 
   if (data.cidr) {
     const existing = await prisma.network.findUnique({ where: { cidr: data.cidr } });
@@ -71,7 +58,7 @@ router.post('/', async (req: AuthRequest, res) => {
       name: data.name,
       cidr: finalCidr,
       vlanId,
-      tenantId: tenant.id
+      ownerId: user.id
     }
   });
 
@@ -100,9 +87,8 @@ router.post('/', async (req: AuthRequest, res) => {
 });
 
 router.get('/:id', async (req: AuthRequest, res) => {
-  const tenantIds = await getUserTenantIds(req.user.id);
   const network = await prisma.network.findFirst({
-    where: { id: req.params.id, tenantId: { in: tenantIds } },
+    where: { id: req.params.id, ownerId: req.user.id },
     include: { devices: true, assignments: { include: { gateway: true } } }
   });
   if (!network) {
@@ -119,9 +105,8 @@ router.get('/:id', async (req: AuthRequest, res) => {
 });
 
 router.delete('/:id', async (req: AuthRequest, res) => {
-  const tenantIds = await getUserTenantIds(req.user.id);
   const network = await prisma.network.findFirst({
-    where: { id: req.params.id, tenantId: { in: tenantIds } },
+    where: { id: req.params.id, ownerId: req.user.id },
     include: { assignments: true }
   });
 
@@ -153,9 +138,8 @@ const createDeviceSchema = z.object({
 });
 
 router.get('/:id/devices', async (req: AuthRequest, res) => {
-  const tenantIds = await getUserTenantIds(req.user.id);
   const network = await prisma.network.findFirst({
-    where: { id: req.params.id, tenantId: { in: tenantIds } }
+    where: { id: req.params.id, ownerId: req.user.id }
   });
   if (!network) {
     res.status(404).json({ detail: 'Network not found' });
@@ -173,9 +157,8 @@ router.get('/:id/devices', async (req: AuthRequest, res) => {
 
 router.post('/:id/devices', async (req: AuthRequest, res) => {
   const data = createDeviceSchema.parse(req.body);
-  const tenantIds = await getUserTenantIds(req.user.id);
   const network = await prisma.network.findFirst({
-    where: { id: req.params.id, tenantId: { in: tenantIds } },
+    where: { id: req.params.id, ownerId: req.user.id },
     include: { devices: true, assignments: true }
   });
   if (!network) {
@@ -248,9 +231,8 @@ const createRouteSchema = z.object({
 });
 
 router.get('/:id/routes', async (req: AuthRequest, res) => {
-  const tenantIds = await getUserTenantIds(req.user.id);
   const network = await prisma.network.findFirst({
-    where: { id: req.params.id, tenantId: { in: tenantIds } }
+    where: { id: req.params.id, ownerId: req.user.id }
   });
   if (!network) {
     res.status(404).json({ detail: 'Network not found' });
@@ -266,10 +248,8 @@ router.get('/:id/routes', async (req: AuthRequest, res) => {
 
 router.post('/:id/routes', async (req: AuthRequest, res) => {
   const data = createRouteSchema.parse(req.body);
-  const tenantIds = await getUserTenantIds(req.user.id);
-  
   const network = await prisma.network.findFirst({
-    where: { id: req.params.id, tenantId: { in: tenantIds } },
+    where: { id: req.params.id, ownerId: req.user.id },
     include: { assignments: true }
   });
   if (!network) {
@@ -308,9 +288,8 @@ const createFirewallRuleSchema = z.object({
 });
 
 router.get('/:id/firewall/rules', async (req: AuthRequest, res) => {
-  const tenantIds = await getUserTenantIds(req.user.id);
   const network = await prisma.network.findFirst({
-    where: { id: req.params.id, tenantId: { in: tenantIds } }
+    where: { id: req.params.id, ownerId: req.user.id }
   });
   if (!network) {
     res.status(404).json({ detail: 'Network not found' });
@@ -328,10 +307,8 @@ router.get('/:id/firewall/rules', async (req: AuthRequest, res) => {
 
 router.post('/:id/firewall/rules', async (req: AuthRequest, res) => {
   const data = createFirewallRuleSchema.parse(req.body);
-  const tenantIds = await getUserTenantIds(req.user.id);
-
   const network = await prisma.network.findFirst({
-    where: { id: req.params.id, tenantId: { in: tenantIds } },
+    where: { id: req.params.id, ownerId: req.user.id },
     include: { assignments: true }
   });
   if (!network) {
