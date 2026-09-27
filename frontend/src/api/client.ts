@@ -65,6 +65,12 @@ export const api = {
     localStorage.setItem('access_token', data.access_token)
     return data
   },
+
+  resendOtp: (email: string) =>
+    request<{ detail: string }>('/auth/resend-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    }),
   
   login: async (email: string, password: string): Promise<AuthResponse> => {
     const response = await fetch(`${BASE_URL}/auth/login`, {
