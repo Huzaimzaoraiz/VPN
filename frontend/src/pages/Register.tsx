@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Shield, Lock, Mail, Building, ArrowRight, RefreshCw } from 'lucide-react'
+import { Shield, Lock, Mail, ArrowRight, RefreshCw } from 'lucide-react'
 import { api } from '../api/client'
 
 export const Register: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [tenantName, setTenantName] = useState('')
   const [step, setStep] = useState<1 | 2>(1)
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
@@ -23,7 +22,7 @@ export const Register: React.FC = () => {
         await api.register({
           email,
           password,
-          tenant_name: tenantName || 'Default Tenant',
+          tenant_name: 'Default Tenant',
         })
         setStep(2)
       } else {
