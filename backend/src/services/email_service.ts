@@ -3,7 +3,9 @@ import { env } from '../config/env';
 
 export class EmailService {
   private static transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: false, // Nodemailer will auto-upgrade to TLS via STARTTLS
     auth: {
       user: env.SMTP_USER,
       pass: env.SMTP_PASS
@@ -36,7 +38,7 @@ export class EmailService {
 
     try {
       await this.transporter.sendMail({
-        from: `"VPN Orchestrator" <${env.SMTP_USER}>`,
+        from: `"VPN Orchestrator" <${env.SMTP_FROM}>`,
         to,
         subject: 'Your Verification Code',
         html: htmlContent

@@ -177,6 +177,64 @@ router.post('/resend-otp', async (req, res) => {
   res.json({ detail: 'OTP resent successfully' });
 });
 
+router.post('/forgot-password', async (req, res) => {
+  const data = resendOtpSchema.parse(req.body);
+  const user = await prisma.user.findUnique({ where: { email: data.email } });
+  
+  if (!user) {
+    // Return success even if user doesn't exist to prevent email enumeration
+    res.json({ detail: 'If that email exists, a reset code has been sent.' });
+    return;
+  }
+
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiresAt = new Date(Date.now() + 10 * 60000);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { otpCode, otpExpiresAt }
+  });
+
+  try {
+    await EmailService.sendOtp(user.email, otpCode);
+  } catch (error: any) {
+    res.status(500).json({ detail: 'Failed to send reset email. Please try again.' });
+    return;
+  }
+
+  res.json({ detail: 'If that email exists, a reset code has been sent.' });
+});
+
+const resetPasswordSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().length(6),
+  new_password: z.string().min(8),
+});
+
+router.post('/reset-password', async (req, res) => {
+  const data = resetPasswordSchema.parse(req.body);
+  const user = await prisma.user.findUnique({ where: { email: data.email } });
+
+  if (!user || user.otpCode !== data.otp || !user.otpExpiresAt || user.otpExpiresAt < new Date()) {
+    res.status(400).json({ detail: 'Invalid or expired OTP' });
+    return;
+  }
+
+  const hashedPassword = await argon2.hash(data.new_password);
+  
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash: hashedPassword,
+      otpCode: null,
+      otpExpiresAt: null,
+      isEmailVerified: true // ensure they are verified if they reset password
+    }
+  });
+
+  res.json({ detail: 'Password has been successfully reset' });
+});
+
 router.get('/me', requireAuth, async (req: AuthRequest, res) => {
   const user = req.user;
   const tenants = await prisma.tenant.findMany({

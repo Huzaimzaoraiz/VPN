@@ -11,8 +11,11 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(32).default("dev-super-secret-key-min-32-chars-long-1234"),
   JWT_EXPIRES_IN: z.string().default("24h"),
   CORS_ORIGINS: z.string().default("*"),
-  SMTP_USER: z.string().optional(),
+  SMTP_HOST: z.string().optional().default("smtp.resend.com"),
+  SMTP_PORT: z.coerce.number().optional().default(587),
+  SMTP_USER: z.string().optional().default("resend"),
   SMTP_PASS: z.string().optional(),
+  SMTP_FROM: z.string().optional().default("onboarding@resend.dev"),
 });
 
 const _env = envSchema.safeParse(process.env);
