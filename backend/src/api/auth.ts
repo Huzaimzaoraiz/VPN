@@ -17,7 +17,6 @@ const loginSchema = z.object({
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  tenant_name: z.string().min(3),
 });
 
 router.post('/login', async (req, res) => {
@@ -59,12 +58,6 @@ router.post('/register', async (req, res) => {
     return;
   }
 
-  const existingTenant = await prisma.tenant.findUnique({ where: { name: data.tenant_name } });
-  if (existingTenant) {
-    res.status(400).json({ detail: 'Tenant name already exists' });
-    return;
-  }
-
   const passwordHash = await argon2.hash(data.password);
 
   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -77,11 +70,6 @@ router.post('/register', async (req, res) => {
       isEmailVerified: false,
       otpCode,
       otpExpiresAt,
-      tenants: {
-        create: {
-          name: data.tenant_name
-        }
-      }
     }
   });
 
@@ -196,7 +184,7 @@ router.post('/forgot-password', async (req, res) => {
   });
 
   try {
-    await EmailService.sendOtp(user.email, otpCode);
+    await EmailService.sendPasswordResetOtp(user.email, otpCode);
   } catch (error: any) {
     res.status(500).json({ detail: 'Failed to send reset email. Please try again.' });
     return;
@@ -237,14 +225,10 @@ router.post('/reset-password', async (req, res) => {
 
 router.get('/me', requireAuth, async (req: AuthRequest, res) => {
   const user = req.user;
-  const tenants = await prisma.tenant.findMany({
-    where: { ownerId: user.id }
-  });
   res.json({
     id: user.id,
     email: user.email,
     role: user.role,
-    tenants: tenants.map(t => ({ id: t.id, name: t.name }))
   });
 });
 

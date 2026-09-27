@@ -18,21 +18,9 @@ model User {
   otpExpiresAt DateTime? @map("otp_expires_at")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  tenants Tenant[]
-
-  @@map("users")
-}
-
-model Tenant {
-  id        String   @id @default(uuid()) @db.VarChar(36)
-  name      String   @unique @db.VarChar(255)
-  ownerId   String   @map("owner_id") @db.VarChar(36)
-  createdAt DateTime @default(now()) @map("created_at")
-
-  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   networks Network[]
 
-  @@map("tenants")
+  @@map("users")
 }
 
 model Network {
@@ -40,10 +28,10 @@ model Network {
   name      String   @db.VarChar(255)
   cidr      String   @unique @db.VarChar(50)
   vlanId    Int      @unique @map("vlan_id")
-  tenantId  String   @map("tenant_id") @db.VarChar(36)
+  ownerId   String   @map("owner_id") @db.VarChar(36)
   createdAt DateTime @default(now()) @map("created_at")
 
-  tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  owner       User                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   devices     Device[]
   routes      Route[]
   firewalls   FirewallRule[]
