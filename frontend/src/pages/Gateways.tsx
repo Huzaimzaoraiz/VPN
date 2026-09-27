@@ -68,19 +68,19 @@ export const Gateways: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">Linux Gateway Nodes</h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Data-plane compute instances executing autonomous desired-state reconciliation for WireGuard, OVS, and nftables
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2">Gateway Nodes</h1>
+          <p className="text-sm text-gray-400">
+            Data-plane compute instances executing autonomous desired-state reconciliation.
           </p>
         </div>
         <div className="flex flex-col items-end space-y-3">
-          <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
+          <div className="flex items-center space-x-2 text-xs font-mono text-gray-400">
             <Activity className="w-4 h-4 text-emerald-400" />
             <span>Live Telemetry Polling (5s)</span>
           </div>
           <button
             onClick={handleGenerateToken}
-            className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-brand-500/20"
+            className="px-5 py-2 flex items-center space-x-2 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
           >
             Deploy New Node
           </button>
@@ -88,9 +88,9 @@ export const Gateways: React.FC = () => {
       </div>
 
       {generatedToken && (
-        <div className="p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 text-slate-300">
-          <p className="text-sm mb-2"><strong>New Node Token Generated!</strong> Copy this and set it as <code className="text-brand-300">NODE_TOKEN</code> in your server's .env file before starting the agent.</p>
-          <code className="px-3 py-2 bg-slate-950 rounded border border-slate-800 text-emerald-400 font-mono text-sm block select-all overflow-x-auto">{generatedToken}</code>
+        <div className="p-6 bg-[#0a0a0a] border border-emerald-500/30 rounded-xl text-white">
+          <p className="text-sm mb-3 font-semibold text-emerald-400">New Node Token Generated! Copy this and set it as <code className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">NODE_TOKEN</code> in your server's .env file before starting the agent.</p>
+          <code className="px-4 py-3 bg-black border border-white/10 rounded-lg text-white font-mono text-sm block select-all overflow-x-auto">{generatedToken}</code>
         </div>
       )}
 
@@ -99,7 +99,7 @@ export const Gateways: React.FC = () => {
           <RefreshCw className="w-8 h-8 animate-spin text-brand-500" />
         </div>
       ) : gateways.length === 0 ? (
-        <div className="p-12 text-center rounded-3xl glass-panel text-slate-400 text-xs">
+        <div className="p-12 text-center dark-panel text-gray-400 text-sm border border-white/10 rounded-xl">
           No gateways registered in cluster. Launch a Linux VM agent to register automatically.
         </div>
       ) : (
@@ -107,23 +107,23 @@ export const Gateways: React.FC = () => {
           {gateways.map((gw) => {
             const isReady = gw.status === 'READY'
             return (
-              <div key={gw.id} className="rounded-2xl glass-panel p-6 space-y-6 relative overflow-hidden">
+              <div key={gw.id} className="dark-panel dark-panel-hover p-6 space-y-6 relative overflow-hidden border border-white/10 rounded-xl">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      className={`w-14 h-14 rounded-lg flex items-center justify-center border border-white/10 ${
                         isReady
-                          ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                          : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+                          ? 'bg-emerald-500/10 text-emerald-400'
+                          : 'bg-rose-500/10 text-rose-400'
                       }`}
                     >
-                      <Server className="w-6 h-6" />
+                      <Server className="w-7 h-7" />
                     </div>
                     <div>
                       <div className="flex items-center space-x-2">
-                        <h3 className="font-bold text-base text-white">{gw.hostname}</h3>
+                        <h3 className="font-semibold text-base text-white">{gw.hostname}</h3>
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border border-white/10 ${
                             isReady
                               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                               : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
@@ -132,7 +132,7 @@ export const Gateways: React.FC = () => {
                           {gw.status}
                         </span>
                       </div>
-                      <p className="text-xs font-mono text-slate-400 mt-0.5">
+                      <p className="text-xs font-mono text-gray-400 mt-0.5">
                         {gw.node_id} • {gw.region} ({gw.provider.toUpperCase()})
                       </p>
                     </div>
@@ -142,7 +142,7 @@ export const Gateways: React.FC = () => {
                     <button
                       onClick={() => handleFailover(gw.id)}
                       disabled={failingOver === gw.id}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all flex items-center space-x-1.5"
+                      className="px-3 py-1.5  text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all flex items-center space-x-1.5"
                       title="Simulate node failure and trigger network migration"
                     >
                       <AlertTriangle className="w-3.5 h-3.5" />
@@ -151,7 +151,7 @@ export const Gateways: React.FC = () => {
                     {!isReady && (
                       <button
                         onClick={() => handleDeleteGateway(gw.id)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition-all"
+                        className="p-1.5  text-gray-400 hover:bg-rose-500/20 hover:text-rose-400 transition-all"
                         title="Delete Gateway permanently"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -161,14 +161,14 @@ export const Gateways: React.FC = () => {
                 </div>
 
                 {/* Gateway Details */}
-                <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono">
+                <div className="grid grid-cols-2 gap-3 p-4 bg-[#111] border border-white/10 rounded-lg text-xs font-mono">
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase block">Public Endpoint:</span>
-                    <span className="text-slate-200 font-bold">{gw.public_ip}:{gw.listen_port}</span>
+                    <span className="text-[10px] text-gray-400 uppercase block mb-1">Public Endpoint:</span>
+                    <span className="text-white font-semibold text-sm">{gw.public_ip}:{gw.listen_port}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase block">Active Sessions:</span>
-                    <span className="text-brand-400 font-bold">{gw.current_sessions} / {gw.capacity}</span>
+                    <span className="text-[10px] text-gray-400 uppercase block mb-1">Active Sessions:</span>
+                    <span className="text-white font-semibold text-sm">{gw.current_sessions} / {gw.capacity}</span>
                   </div>
                 </div>
 
@@ -176,15 +176,15 @@ export const Gateways: React.FC = () => {
                 <div className="space-y-3">
                   <div>
                     <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-slate-400 flex items-center space-x-1">
+                      <span className="text-gray-400 flex items-center space-x-1">
                         <Cpu className="w-3.5 h-3.5" />
                         <span>CPU Utilization</span>
                       </span>
                       <span className="font-mono font-bold text-white">{gw.cpu_usage}%</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div className="w-full h-2  bg-gray-100 overflow-hidden">
                       <div
-                        className="h-full bg-brand-500 rounded-full transition-all duration-500"
+                        className="h-full bg-brand-500  transition-all duration-500"
                         style={{ width: `${Math.min(gw.cpu_usage, 100)}%` }}
                       ></div>
                     </div>
@@ -192,15 +192,15 @@ export const Gateways: React.FC = () => {
 
                   <div>
                     <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-slate-400 flex items-center space-x-1">
+                      <span className="text-gray-400 flex items-center space-x-1">
                         <Database className="w-3.5 h-3.5" />
                         <span>Memory Utilization</span>
                       </span>
                       <span className="font-mono font-bold text-white">{gw.memory_usage}%</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div className="w-full h-2  bg-gray-100 overflow-hidden">
                       <div
-                        className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                        className="h-full bg-blue-500  transition-all duration-500"
                         style={{ width: `${Math.min(gw.memory_usage, 100)}%` }}
                       ></div>
                     </div>
@@ -209,10 +209,10 @@ export const Gateways: React.FC = () => {
 
                 {/* Public Key */}
                 <div>
-                  <span className="text-[10px] uppercase font-mono text-slate-500 block mb-1">
+                  <span className="text-[10px] uppercase font-mono text-gray-400 block mb-2">
                     Gateway WireGuard Public Key:
                   </span>
-                  <p className="text-[11px] font-mono text-slate-400 truncate bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800/80">
+                  <p className="text-xs font-mono text-gray-400 truncate bg-black px-3 py-2.5  border border-white">
                     {gw.public_key}
                   </p>
                 </div>

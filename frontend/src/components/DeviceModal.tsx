@@ -107,37 +107,37 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#0a0a0a] border border-white/10 rounded-xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+          className="absolute top-5 right-5 text-gray-400 hover:text-white p-1 hover:bg-white/5 rounded-lg transition-colors bg-transparent border-none"
         >
           <X className="w-5 h-5" />
         </button>
 
         {!createdConfig ? (
           <div>
-            <div className="flex items-center space-x-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
-                <Laptop className="w-5 h-5" />
+            <div className="flex items-center space-x-4 mb-5">
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300">
+                <Laptop className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Add New Device</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="text-xl font-semibold text-white">Add New Device</h3>
+                <p className="text-sm text-gray-400 mt-0.5">
                   Zero-Knowledge Onboarding: Private keys are generated locally in your browser.
                 </p>
               </div>
             </div>
 
             {error && (
-              <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
                   Device Name
                 </label>
                 <input
@@ -146,70 +146,70 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
                   placeholder="e.g. MacBook Pro, Production Node"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                  className="w-full"
                 />
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2.5">
+              <div className="p-4 bg-[#111] border border-white/10 rounded-lg space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-xs font-semibold text-slate-300">
+                  <div className="flex items-center space-x-2 text-sm font-semibold text-gray-300">
                     <Key className="w-4 h-4 text-brand-400" />
                     <span>Client-Generated Cryptographic Keys</span>
                   </div>
                   <button
                     type="button"
                     onClick={handleRegenerateKeys}
-                    className="text-xs text-slate-400 hover:text-brand-400 flex items-center space-x-1"
+                    className="text-xs text-gray-400 hover:text-white flex items-center space-x-1 bg-transparent border-none"
                   >
-                    <RefreshCw className="w-3 h-3" />
+                    <RefreshCw className="w-3.5 h-3.5" />
                     <span>Regenerate</span>
                   </button>
                 </div>
 
                 <div>
-                  <span className="text-[10px] uppercase font-mono text-slate-500 block">
+                  <span className="text-[10px] uppercase font-semibold tracking-wider text-gray-500 block mb-1">
                     Public Key (Transmitted to Gateway):
                   </span>
-                  <p className="text-xs font-mono text-emerald-400 truncate bg-slate-900 px-2 py-1 rounded border border-slate-800/60 mt-1">
+                  <p className="text-xs font-mono text-emerald-400 truncate bg-black px-3 py-2 rounded border border-emerald-500/20">
                     {keypair?.publicKeyBase64}
                   </p>
                 </div>
 
                 <div>
-                  <span className="text-[10px] uppercase font-mono text-slate-500 block">
+                  <span className="text-[10px] uppercase font-semibold tracking-wider text-gray-500 block mb-1">
                     Private Key (Stays In Browser Memory):
                   </span>
-                  <p className="text-xs font-mono text-slate-400 truncate bg-slate-900 px-2 py-1 rounded border border-slate-800/60 mt-1">
+                  <p className="text-xs font-mono text-gray-400 truncate bg-black px-3 py-2 rounded border border-white/10">
                     {keypair?.privateKeyBase64.substring(0, 16)}•••••••••••••••••••••••••••••
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-lg bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-4 bg-[#111] border border-white/10 rounded-lg">
                 <div className="flex flex-col">
-                  <span className="text-xs font-medium text-slate-200">Act as Exit Node</span>
-                  <span className="text-[11px] text-slate-500">Route WAN internet traffic through this device</span>
+                  <span className="text-sm font-semibold text-gray-300">Act as Exit Node</span>
+                  <span className="text-xs text-gray-500 mt-0.5">Route WAN internet traffic through this device</span>
                 </div>
                 <input
                   type="checkbox"
                   checked={isExitNode}
                   onChange={(e) => setIsExitNode(e.target.checked)}
-                  className="w-4 h-4 text-brand-500 rounded bg-slate-900 border-slate-700 focus:ring-0 focus:ring-offset-0"
+                  className="w-5 h-5 rounded border-white/20 bg-black text-white focus:ring-0 focus:ring-offset-0 cursor-pointer"
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end space-x-3">
+              <div className="pt-4 flex items-center justify-end space-x-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white bg-transparent hover:bg-white/5 rounded-lg border-none transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading || !name.trim()}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white transition-colors disabled:opacity-50 flex items-center space-x-2"
+                  className="btn-primary"
                 >
                   {loading ? (
                     <>
@@ -224,41 +224,41 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
             </form>
           </div>
         ) : (
-          <div className="space-y-5">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                <Check className="w-5 h-5" />
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <Check className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Device Connected!</h3>
-                <p className="text-xs text-slate-400">
-                  Assigned Static VPN IP: <span className="text-brand-400 font-mono font-bold">{createdConfig.vpn_ip}</span>
+                <h3 className="text-xl font-semibold text-white">Device Connected!</h3>
+                <p className="text-sm text-gray-400 mt-0.5">
+                  Assigned Static VPN IP: <span className="text-white font-mono font-semibold px-2 py-0.5 bg-white/5 rounded ml-1">{createdConfig.vpn_ip}</span>
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-xl bg-slate-950 border border-slate-800">
-              <div className="p-3 bg-white rounded-xl shadow-lg flex-shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-[#111] border border-white/10 rounded-xl">
+              <div className="p-4 bg-white rounded-xl shadow-sm flex-shrink-0">
                 <QRCodeSVG value={clientConfText} size={150} level="M" />
               </div>
-              <div className="space-y-2 text-xs text-slate-300">
+              <div className="space-y-3 text-sm text-gray-400">
                 <p className="font-semibold text-white">Mobile Quick Setup</p>
-                <p className="text-slate-400 text-[11px] leading-relaxed">
+                <p className="text-gray-400 text-sm leading-relaxed">
                   Scan this QR code with the official WireGuard app on iOS or Android to immediately connect this device to your virtual network.
                 </p>
-                <div className="pt-2 flex items-center gap-2">
+                <div className="pt-2 flex flex-wrap items-center gap-3">
                   <button
                     onClick={handleDownloadConfig}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center space-x-1.5 transition-colors border border-slate-700"
+                    className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 text-sm font-semibold flex items-center space-x-2 transition-colors"
                   >
-                    <Download className="w-3.5 h-3.5 text-brand-400" />
+                    <Download className="w-4 h-4 text-emerald-400" />
                     <span>Download .conf</span>
                   </button>
                   <button
                     onClick={handleCopyConfig}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center space-x-1.5 transition-colors border border-slate-700"
+                    className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 text-sm font-semibold flex items-center space-x-2 transition-colors"
                   >
-                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+                    {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-gray-400" />}
                     <span>{copied ? 'Copied!' : 'Copy Text'}</span>
                   </button>
                 </div>
@@ -266,10 +266,10 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
             </div>
 
             <div>
-              <span className="text-[11px] uppercase font-mono text-slate-400 block mb-1.5">
+              <span className="text-[11px] uppercase font-semibold text-gray-500 tracking-wider block mb-2">
                 WireGuard Configuration File Preview:
               </span>
-              <pre className="p-3 bg-slate-950 border border-slate-800/80 rounded-lg text-[11px] font-mono text-slate-300 overflow-x-auto max-h-40">
+              <pre className="p-4 bg-black border border-white/10 rounded-xl text-xs font-mono text-gray-400 overflow-x-auto max-h-40">
                 {clientConfText}
               </pre>
             </div>
@@ -277,7 +277,7 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
             <div className="flex justify-end pt-2">
               <button
                 onClick={onClose}
-                className="px-5 py-2 rounded-lg text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white transition-colors"
+                className="btn-primary"
               >
                 Done
               </button>
