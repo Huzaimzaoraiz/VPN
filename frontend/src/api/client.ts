@@ -51,6 +51,21 @@ export const api = {
   register: (data: { email: string; password: string; tenant_name: string }) =>
     request<any>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   
+  verifyOtp: async (email: string, otp: string): Promise<AuthResponse> => {
+    const response = await fetch(`${BASE_URL}/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp }),
+    })
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}))
+      throw new Error(err.detail || 'OTP Verification failed')
+    }
+    const data: AuthResponse = await response.json()
+    localStorage.setItem('access_token', data.access_token)
+    return data
+  },
+  
   login: async (email: string, password: string): Promise<AuthResponse> => {
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',

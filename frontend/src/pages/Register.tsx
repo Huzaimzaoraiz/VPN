@@ -7,6 +7,8 @@ export const Register: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [tenantName, setTenantName] = useState('')
+  const [step, setStep] = useState<1 | 2>(1)
+  const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -16,16 +18,19 @@ export const Register: React.FC = () => {
     setLoading(true)
     setError(null)
     try {
-      await api.register({
-        email,
-        password,
-        tenant_name: tenantName || 'Default Tenant',
-      })
-      // Automatically login after successful registration
-      await api.login(email, password)
-      navigate('/')
+      if (step === 1) {
+        await api.register({
+          email,
+          password,
+          tenant_name: tenantName || 'Default Tenant',
+        })
+        setStep(2)
+      } else {
+        await api.verifyOtp(email, otp)
+        navigate('/')
+      }
     } catch (err: any) {
-      setError(err.message || 'Registration failed')
+      setError(err.message || (step === 1 ? 'Registration failed' : 'OTP verification failed'))
     } finally {
       setLoading(false)
     }
@@ -48,74 +53,111 @@ export const Register: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Tenant Organization Name
-            </label>
-            <div className="relative">
-              <Building className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
-              <input
-                type="text"
-                required
-                placeholder="Acme Corp, Dev Cluster"
-                value={tenantName}
-                onChange={(e) => setTenantName(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
-              />
+        {step === 1 ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                Tenant Organization Name
+              </label>
+              <div className="relative">
+                <Building className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                <input
+                  type="text"
+                  required
+                  placeholder="Acme Corp, Dev Cluster"
+                  value={tenantName}
+                  onChange={(e) => setTenantName(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                />
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
-              <input
-                type="email"
-                required
-                placeholder="you@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
-              />
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                <input
+                  type="email"
+                  required
+                  placeholder="you@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                />
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Master Password (Argon2id Encrypted)
-            </label>
-            <div className="relative">
-              <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
-              <input
-                type="password"
-                required
-                minLength={8}
-                placeholder="Min 8 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
-              />
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                Master Password (Argon2id Encrypted)
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  placeholder="Min 8 characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                />
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
-          >
-            {loading ? (
-              <RefreshCw className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                <span>Create Isolated Tenant</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
+            >
+              {loading ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <span>Create Isolated Tenant</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="text-center mb-6">
+              <p className="text-sm text-slate-300">We've sent a 6-digit verification code to <strong>{email}</strong>. Please check your terminal to see the code.</p>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 text-center">
+                Enter OTP Code
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  placeholder="123456"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-center text-lg tracking-[0.5em] font-mono focus:outline-none focus:border-brand-500 transition-colors"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={loading || otp.length !== 6}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
+            >
+              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : (
+                <>
+                  <span>Verify & Login</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+        )}
 
         <div className="mt-6 text-center text-xs text-slate-400">
           Already registered?{' '}
