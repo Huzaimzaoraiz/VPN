@@ -22,61 +22,63 @@ export const Navbar: React.FC = () => {
   }
 
   return (
-    <nav className="border-b border-slate-800 bg-slate-900 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-8">
-            <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-8 h-8 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-slate-300" />
-              </div>
-              <div>
-                <span className="font-bold text-lg tracking-tight text-white">
-                  OVERLAY<span className="text-slate-400">VPN</span>
-                </span>
-                <span className="hidden sm:inline-block ml-2 px-2 py-0.5 text-[10px] uppercase font-mono tracking-wider bg-slate-800 text-slate-400 border border-slate-700 rounded-sm">
-                  Control Plane
-                </span>
-              </div>
-            </Link>
+    <nav className="w-full md:w-64 bg-black border-r border-white min-h-screen sticky top-0 flex flex-col p-4 z-40">
+      <div className="flex flex-col h-full">
+        <div className="flex items-center space-x-3 mb-10 px-2 pt-4">
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 border border-white/10 rounded-lg flex items-center justify-center text-white bg-white/5 group-hover:bg-white/10 transition-colors">
+              <Shield className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-black text-xl tracking-tight text-white block leading-tight">
+                OVERLAY
+              </span>
+              <span className="text-xs uppercase font-mono tracking-wider text-gray-400">
+                Network
+              </span>
+            </div>
+          </Link>
+        </div>
 
-            {token && (
-              <div className="hidden md:flex items-center space-x-1">
-                <Link
-                  to="/"
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                >
-                  <Network className="w-4 h-4 text-slate-500" />
-                  <span>Networks</span>
-                </Link>
-                {isAdmin && (
-                  <Link
-                    to="/gateways"
-                    className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                  >
-                    <Server className="w-4 h-4 text-slate-500" />
-                    <span>Gateways</span>
-                  </Link>
-                )}
-              </div>
+        {token && (
+          <div className="flex flex-col space-y-2 flex-1">
+            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2 pb-2">Menu</div>
+            <Link
+              to="/"
+              className="flex items-center space-x-3 px-4 py-3 border-transparent hover:bg-white/5 text-sm font-semibold text-gray-300 hover:text-white rounded-lg transition-all group"
+            >
+              <Network className="w-5 h-5 text-white" />
+              <span>Networks</span>
+            </Link>
+            {isAdmin && (
+              <Link
+                to="/gateways"
+                className="flex items-center space-x-3 px-4 py-3 border-transparent hover:bg-white/5 text-sm font-semibold text-gray-300 hover:text-white rounded-lg transition-all group"
+              >
+                <Server className="w-5 h-5 text-white" />
+                <span>Gateways</span>
+              </Link>
             )}
           </div>
+        )}
 
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 px-3 py-1 rounded-sm bg-emerald-900/30 border border-emerald-900/50 text-emerald-400 text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span className="hidden sm:inline">Dataplane:</span>
-              <span className="font-bold">Operational</span>
+        <div className="mt-auto pt-6 border-t border-white/10">
+          <div className="flex flex-col space-y-4 px-2">
+            <div className="flex flex-col space-y-1">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</span>
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span className="text-emerald-400 text-xs font-mono font-medium">Dataplane Online</span>
+              </div>
             </div>
 
             {token && (
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 p-2 sm:px-3 sm:py-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-rose-950 border border-transparent hover:border-rose-900 transition-all text-xs font-medium"
-                title="Logout"
+                className="flex items-center justify-center space-x-2 px-3 py-2 border border-white/10 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 text-gray-300 rounded-lg transition-all text-sm font-medium mt-4"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Sign out</span>
+                <span>Disconnect</span>
               </button>
             )}
           </div>

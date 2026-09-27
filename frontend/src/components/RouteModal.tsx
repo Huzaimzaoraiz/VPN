@@ -49,33 +49,33 @@ export const RouteModal: React.FC<RouteModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <div className="bg-[#0a0a0a] border border-white/10 rounded-xl max-w-md w-full p-6 shadow-2xl relative">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+          className="absolute top-5 right-5 text-gray-400 hover:text-white p-1 hover:bg-white/5 rounded-lg transition-colors bg-transparent border-none"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center space-x-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-            <RouteIcon className="w-5 h-5" />
+        <div className="flex items-center space-x-4 mb-5">
+          <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300">
+            <RouteIcon className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Add Custom Route</h3>
-            <p className="text-xs text-slate-400">Route remote subnets via a device inside your network</p>
+            <h3 className="text-xl font-semibold text-white">Add Custom Route</h3>
+            <p className="text-sm text-gray-400 mt-0.5">Route remote subnets via a device inside your network</p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
               Destination Subnet CIDR
             </label>
             <input
@@ -84,19 +84,19 @@ export const RouteModal: React.FC<RouteModalProps> = ({
               placeholder="e.g. 192.168.50.0/24"
               value={destinationCidr}
               onChange={(e) => setDestinationCidr(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500"
+              className="w-full"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
               Next-Hop Device VPN IP
             </label>
             <select
               value={nextHopVpnIp}
               onChange={(e) => setNextHopVpnIp(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500"
+              className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg text-slate-100 text-sm px-3.5 py-2.5 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/10"
             >
               <option value="">Select a device...</option>
               {devices.map((d) => (
@@ -108,7 +108,7 @@ export const RouteModal: React.FC<RouteModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
               Description (Optional)
             </label>
             <input
@@ -116,24 +116,24 @@ export const RouteModal: React.FC<RouteModalProps> = ({
               placeholder="e.g. Office Internal Subnet"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500"
+              className="w-full"
             />
           </div>
 
-          <div className="pt-2 flex justify-end space-x-3">
+          <div className="pt-4 flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white"
+              className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white bg-transparent hover:bg-white/5 rounded-lg border-none transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !destinationCidr || !nextHopVpnIp}
-              className="px-4 py-2 rounded-lg text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white disabled:opacity-50 flex items-center space-x-2"
+              className="btn-primary"
             >
-              {loading && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
+              {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
               <span>Save Route</span>
             </button>
           </div>

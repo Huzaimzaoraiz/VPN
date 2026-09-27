@@ -42,48 +42,62 @@ export const ForgotPassword: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-
-      <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div className="flex justify-center">
-          <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
-            <Shield className="w-6 h-6 text-slate-300" />
+    <div className="min-h-screen flex text-gray-400 bg-black">
+      
+      {/* Left side: Branding / Graphic */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#0a0a0a] overflow-hidden border-r border-white/10">
+        <div className="absolute inset-0 bg-[#0a0a0a]"></div>
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+        
+        <div className="relative z-10 flex flex-col justify-center px-20">
+          <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-xl flex items-center justify-center text-white mb-8 shadow-2xl">
+            <Shield className="w-8 h-8" />
           </div>
+          <h1 className="text-5xl font-bold text-white tracking-tight leading-tight mb-4">
+            Regain <br />
+            Access.
+          </h1>
+          <p className="text-lg text-gray-400 font-medium max-w-md">
+            Securely verify your identity and restore access to your isolated virtual networks.
+          </p>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-white tracking-tight">
-          Reset Password
-        </h2>
-        <p className="mt-2 text-center text-sm text-slate-400">
-          {step === 1 ? "We'll send a code to your email." : "Enter your code and new password."}
-        </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div className="bg-slate-900 py-8 px-4 shadow-xl sm:rounded-xl sm:px-10 border border-slate-800">
+      {/* Right side: Form */}
+      <div className="flex-1 flex flex-col justify-center px-4 sm:px-12 lg:px-24">
+        <div className="w-full max-w-sm mx-auto">
+          <div className="mb-10 lg:hidden">
+            <div className="w-12 h-12 bg-[#111] border border-white/10 rounded-xl flex items-center justify-center text-white mb-4 shadow-xl">
+              <Shield className="w-6 h-6" />
+            </div>
+          </div>
+
+          <h2 className="text-3xl font-bold tracking-tight text-white mb-2">Reset Password</h2>
+          <p className="text-gray-400 font-medium mb-8 text-sm">
+            {step === 1 ? "We'll send a code to your email." : "Enter your code and new password."}
+          </p>
           
           {error && (
-            <div className="mb-6 rounded-lg bg-rose-500/10 border border-rose-500/20 p-4">
-              <p className="text-sm text-rose-400 text-center font-medium">{error}</p>
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium">
+              {error}
             </div>
           )}
 
           {step === 1 ? (
-            <form className="space-y-6" onSubmit={handleRequestOtp}>
+            <form className="space-y-5" onSubmit={handleRequestOtp}>
               <div>
-                <label htmlFor="email" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                  Email Address
+                <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                  Email
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-slate-500" />
-                  </div>
+                  <Mail className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
                   <input
                     id="email"
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-800 rounded-lg bg-slate-950 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 focus:bg-slate-900 transition-all sm:text-sm"
+                    className="w-full pl-12 pr-4 py-3"
                     placeholder="admin@example.com"
                   />
                 </div>
@@ -92,55 +106,51 @@ export const ForgotPassword: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group w-full flex justify-center items-center py-2.5 px-4 border border-slate-700 rounded-md shadow-sm text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="w-full py-3 flex items-center justify-center space-x-2 mt-6 rounded-lg"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    Send Reset Code
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <span>Send Reset Code</span>
+                    <ArrowRight className="w-5 h-5" />
                   </>
                 )}
               </button>
             </form>
           ) : (
-            <form className="space-y-6" onSubmit={handleResetPassword}>
+            <form className="space-y-5" onSubmit={handleResetPassword}>
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
                   6-Digit Reset Code
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <KeyRound className="h-5 w-5 text-slate-500" />
-                  </div>
+                  <KeyRound className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
                   <input
                     type="text"
                     required
                     maxLength={6}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                    className="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-800 rounded-lg bg-slate-950 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 focus:bg-slate-900 transition-all sm:text-sm text-center tracking-[0.5em] font-mono text-lg"
+                    className="w-full pl-12 pr-4 py-3 text-center tracking-widest font-mono text-xl rounded-lg"
                     placeholder="123456"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
                   New Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-slate-500" />
-                  </div>
+                  <Lock className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
                   <input
                     type="password"
                     required
                     minLength={8}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-800 rounded-lg bg-slate-950 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 focus:bg-slate-900 transition-all sm:text-sm"
+                    className="w-full pl-12 pr-4 py-3"
                     placeholder="••••••••"
                   />
                 </div>
@@ -149,20 +159,23 @@ export const ForgotPassword: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || otp.length !== 6 || newPassword.length < 8}
-                className="w-full flex justify-center items-center py-2.5 px-4 border border-slate-700 rounded-md shadow-sm text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full py-3 flex items-center justify-center space-x-2 mt-6 rounded-lg"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Set New Password'}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                  <>
+                    <span>Set New Password</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
             </form>
           )}
 
-          <div className="mt-8 text-center border-t border-slate-800 pt-6">
-            <p className="text-sm text-slate-400">
-              Remembered your password?{' '}
-              <Link to="/login" className="font-medium text-slate-200 hover:text-white underline underline-offset-2 transition-colors">
-                Back to login
-              </Link>
-            </p>
+          <div className="mt-10 text-center text-sm text-gray-400 font-medium">
+            Remembered your password?{' '}
+            <Link to="/login" className="text-white hover:text-gray-200 transition-colors">
+              Back to login
+            </Link>
           </div>
         </div>
       </div>

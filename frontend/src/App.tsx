@@ -18,10 +18,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 export function App() {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col text-slate-300">
-      <Navbar />
-      <main className="flex-1">
-        <Routes>
+    <div className="min-h-screen font-sans selection:bg-brand-500/30 selection:text-white flex flex-col md:flex-row">
+      <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -29,7 +27,10 @@ export function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Navbar />
+                <main className="flex-1 overflow-x-hidden overflow-y-auto">
+                  <Dashboard />
+                </main>
               </ProtectedRoute>
             }
           />
@@ -37,7 +38,10 @@ export function App() {
             path="/networks/:id"
             element={
               <ProtectedRoute>
-                <NetworkDetail />
+                <Navbar />
+                <main className="flex-1 overflow-x-hidden overflow-y-auto">
+                  <NetworkDetail />
+                </main>
               </ProtectedRoute>
             }
           />
@@ -45,13 +49,15 @@ export function App() {
             path="/gateways"
             element={
               <ProtectedRoute>
-                <Gateways />
+                <Navbar />
+                <main className="flex-1 overflow-x-hidden overflow-y-auto">
+                  <Gateways />
+                </main>
               </ProtectedRoute>
             }
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </main>
     </div>
   )
 }
