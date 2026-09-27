@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../core/database';
-import { requireAuth, AuthRequest } from './middlewares/auth';
+import { requireAuth, requireSuperAdmin, AuthRequest } from './middlewares/auth';
 import { DesiredStateEngine } from '../orchestration/desired_state';
 import { GatewayScheduler } from '../orchestration/scheduler';
 import { gatewayTelemetryMap } from '../grpc/service';
@@ -10,6 +10,7 @@ import * as crypto from 'crypto';
 
 const router = Router();
 router.use(requireAuth);
+router.use(requireSuperAdmin);
 
 const activeFailovers = new Set<string>();
 router.post('/generate-token', async (req: AuthRequest, res) => {

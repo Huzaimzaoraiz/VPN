@@ -32,3 +32,11 @@ export const requireAuth = async (req: AuthRequest, res: Response, next: NextFun
     res.status(401).json({ detail: 'Token expired or invalid' });
   }
 };
+
+export const requireSuperAdmin = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (!req.user || req.user.role !== 'SUPERADMIN') {
+    res.status(403).json({ detail: 'Forbidden: Requires SUPERADMIN role' });
+    return;
+  }
+  next();
+};

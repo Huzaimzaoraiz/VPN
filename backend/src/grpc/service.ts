@@ -137,11 +137,14 @@ export const VpnNodeControlServiceImpl = {
     
     connectedNodes.set(gatewayId, call);
 
-    // If stream ends, remove from map
-    call.on('cancelled', () => {
-      console.log(`VPN Node ${gatewayId} cancelled stream`);
+    const cleanup = () => {
+      console.log(`VPN Node ${gatewayId} stream closed/error`);
       connectedNodes.delete(gatewayId);
-    });
+    };
+
+    call.on('cancelled', cleanup);
+    call.on('error', cleanup);
+    call.on('end', cleanup);
 
     // Send current desired state immediately if exists
     prisma.gatewayDesiredState.findUnique({ where: { gatewayId } })
