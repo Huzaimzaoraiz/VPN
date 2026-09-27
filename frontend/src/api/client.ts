@@ -71,6 +71,18 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ email })
     }),
+
+  forgotPassword: (email: string) =>
+    request<{ detail: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    }),
+
+  resetPassword: (data: { email: string; otp: string; new_password: string }) =>
+    request<{ detail: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
   
   login: async (email: string, password: string): Promise<AuthResponse> => {
     const response = await fetch(`${BASE_URL}/auth/login`, {

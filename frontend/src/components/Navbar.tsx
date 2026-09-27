@@ -1,10 +1,20 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Shield, Network, Server, LogOut } from 'lucide-react'
+import { api } from '../api/client'
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate()
   const token = localStorage.getItem('access_token')
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    if (token) {
+      api.getMe()
+        .then(user => setIsAdmin(user.role === 'SUPERADMIN'))
+        .catch(err => console.error('Failed to fetch user role:', err))
+    }
+  }, [token])
 
   const handleLogout = () => {
     localStorage.removeItem('access_token')
@@ -41,13 +51,15 @@ export const Navbar: React.FC = () => {
                   <Network className="w-4 h-4 text-slate-400" />
                   <span>Networks</span>
                 </Link>
-                <Link
-                  to="/gateways"
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
-                >
-                  <Server className="w-4 h-4 text-slate-400" />
-                  <span>Gateways</span>
-                </Link>
+                {isAdmin && (
+                  <Link
+                    to="/gateways"
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
+                  >
+                    <Server className="w-4 h-4 text-slate-400" />
+                    <span>Gateways</span>
+                  </Link>
+                )}
               </div>
             )}
           </div>
