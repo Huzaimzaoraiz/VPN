@@ -81,7 +81,7 @@ export const Dashboard: React.FC = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-xs shadow-lg shadow-brand-500/20 flex items-center space-x-2 transition-all self-start sm:self-auto"
+          className="px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-sm flex items-center space-x-2 transition-colors self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Create Network</span>

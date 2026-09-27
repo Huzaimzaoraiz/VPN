@@ -27,13 +27,11 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 p-0.5 shadow-lg shadow-brand-500/20">
-                <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-brand-500 group-hover:scale-110 transition-transform" />
-                </div>
+              <div className="w-9 h-9 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-brand-500" />
               </div>
               <div>
-                <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                <span className="font-extrabold text-lg tracking-tight text-white">
                   OVERLAY<span className="text-brand-500">VPN</span>
                 </span>
                 <span className="hidden sm:inline-block ml-2 px-2 py-0.5 text-[10px] uppercase font-mono tracking-wider bg-brand-500/10 text-brand-400 border border-brand-500/20 rounded-md">

@@ -26,11 +26,10 @@ export const Login: React.FC = () => {
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center p-4">
-      <div className="w-full max-w-md p-8 rounded-3xl glass-panel relative overflow-hidden shadow-2xl">
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="w-full max-w-md p-8 rounded-xl bg-slate-900 border border-slate-800 shadow-xl relative overflow-hidden">
 
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mb-3 shadow-lg shadow-brand-500/10">
+          <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mb-3">
             <Shield className="w-6 h-6" />
           </div>
           <h2 className="text-2xl font-black tracking-tight text-white">Sign In to Control Plane</h2>
@@ -86,7 +85,7 @@ export const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
+            className="w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm tracking-wide transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
           >
             {loading ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
