@@ -85,7 +85,13 @@ router.post('/register', async (req, res) => {
     }
   });
 
-  await EmailService.sendOtp(user.email, otpCode);
+  try {
+    await EmailService.sendOtp(user.email, otpCode);
+  } catch (error: any) {
+    await prisma.user.delete({ where: { id: user.id } });
+    res.status(500).json({ detail: 'Failed to send verification email. Please try again.' });
+    return;
+  }
 
   res.status(201).json({ id: user.id, email: user.email });
 });
@@ -133,6 +139,42 @@ router.post('/verify-otp', async (req, res) => {
   });
 
   res.json({ access_token: token, token_type: 'bearer' });
+});
+
+const resendOtpSchema = z.object({
+  email: z.string().email(),
+});
+
+router.post('/resend-otp', async (req, res) => {
+  const data = resendOtpSchema.parse(req.body);
+
+  const user = await prisma.user.findUnique({ where: { email: data.email } });
+  if (!user) {
+    res.status(404).json({ detail: 'User not found' });
+    return;
+  }
+
+  if (user.isEmailVerified) {
+    res.status(400).json({ detail: 'Email already verified' });
+    return;
+  }
+
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiresAt = new Date(Date.now() + 10 * 60000); // 10 minutes
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { otpCode, otpExpiresAt }
+  });
+
+  try {
+    await EmailService.sendOtp(user.email, otpCode);
+  } catch (error: any) {
+    res.status(500).json({ detail: 'Failed to send verification email. Please try again.' });
+    return;
+  }
+
+  res.json({ detail: 'OTP resent successfully' });
 });
 
 router.get('/me', requireAuth, async (req: AuthRequest, res) => {

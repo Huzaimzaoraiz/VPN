@@ -10,6 +10,7 @@ export const Register: React.FC = () => {
   const [step, setStep] = useState<1 | 2>(1)
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resending, setResending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
@@ -33,6 +34,19 @@ export const Register: React.FC = () => {
       setError(err.message || (step === 1 ? 'Registration failed' : 'OTP verification failed'))
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleResendOtp = async () => {
+    setResending(true)
+    setError(null)
+    try {
+      await api.resendOtp(email)
+      alert('A new 6-digit code has been sent.')
+    } catch (err: any) {
+      setError(err.message || 'Failed to resend OTP')
+    } finally {
+      setResending(false)
     }
   }
 
@@ -144,18 +158,29 @@ export const Register: React.FC = () => {
                 />
               </div>
             </div>
-            <button
-              type="submit"
-              disabled={loading || otp.length !== 6}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
-            >
-              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : (
-                <>
-                  <span>Verify & Login</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
+            <div className="flex flex-col space-y-3 mt-4">
+              <button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+              >
+                {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : (
+                  <>
+                    <span>Verify & Login</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={resending}
+                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-all disabled:opacity-50"
+              >
+                {resending ? 'Sending...' : 'Didn\'t receive code? Resend'}
+              </button>
+            </div>
           </form>
         )}
 
