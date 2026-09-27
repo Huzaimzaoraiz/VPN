@@ -29,7 +29,7 @@ export const Login: React.FC = () => {
       <div className="w-full max-w-md p-8 rounded-xl bg-slate-900 border border-slate-800 shadow-xl relative overflow-hidden">
 
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mb-3">
+          <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 mb-3">
             <Shield className="w-6 h-6" />
           </div>
           <h2 className="text-2xl font-black tracking-tight text-white">Sign In to Control Plane</h2>
@@ -55,7 +55,7 @@ export const Login: React.FC = () => {
                 placeholder="admin@vpn.internal"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-slate-500 focus:bg-slate-900 transition-colors"
               />
             </div>
           </div>
@@ -65,7 +65,7 @@ export const Login: React.FC = () => {
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Password
               </label>
-              <Link to="/forgot-password" className="text-xs text-brand-400 hover:text-brand-300 font-medium">
+              <Link to="/forgot-password" className="text-xs text-slate-400 hover:text-slate-300 font-medium underline underline-offset-2">
                 Forgot password?
               </Link>
             </div>
@@ -77,7 +77,7 @@ export const Login: React.FC = () => {
                 placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-slate-500 focus:bg-slate-900 transition-colors"
               />
             </div>
           </div>
@@ -85,7 +85,7 @@ export const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm tracking-wide transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 mt-2"
+            className="w-full py-2.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-sm tracking-wide transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 mt-4 shadow-sm"
           >
             {loading ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -100,7 +100,7 @@ export const Login: React.FC = () => {
 
         <div className="mt-6 text-center text-xs text-slate-400">
           Don't have a tenant yet?{' '}
-          <Link to="/register" className="text-brand-400 hover:text-brand-300 font-semibold underline">
+          <Link to="/register" className="text-slate-200 font-semibold underline underline-offset-2">
             Register new tenant
           </Link>
         </div>

@@ -46,8 +46,8 @@ export const ForgotPassword: React.FC = () => {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-            <Shield className="w-8 h-8 text-brand-500" />
+          <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
+            <Shield className="w-6 h-6 text-slate-300" />
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-white tracking-tight">
@@ -83,7 +83,7 @@ export const ForgotPassword: React.FC = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-950/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all sm:text-sm"
+                    className="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-800 rounded-lg bg-slate-950 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 focus:bg-slate-900 transition-all sm:text-sm"
                     placeholder="admin@example.com"
                   />
                 </div>
@@ -92,7 +92,7 @@ export const ForgotPassword: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="group w-full flex justify-center items-center py-2.5 px-4 border border-slate-700 rounded-md shadow-sm text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -120,7 +120,7 @@ export const ForgotPassword: React.FC = () => {
                     maxLength={6}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-950/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all sm:text-sm text-center tracking-[0.5em] font-mono text-lg"
+                    className="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-800 rounded-lg bg-slate-950 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 focus:bg-slate-900 transition-all sm:text-sm text-center tracking-[0.5em] font-mono text-lg"
                     placeholder="123456"
                   />
                 </div>
@@ -140,7 +140,7 @@ export const ForgotPassword: React.FC = () => {
                     minLength={8}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-950/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all sm:text-sm"
+                    className="appearance-none block w-full pl-10 pr-3 py-2.5 border border-slate-800 rounded-lg bg-slate-950 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 focus:bg-slate-900 transition-all sm:text-sm"
                     placeholder="••••••••"
                   />
                 </div>
@@ -149,7 +149,7 @@ export const ForgotPassword: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || otp.length !== 6 || newPassword.length < 8}
-                className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex justify-center items-center py-2.5 px-4 border border-slate-700 rounded-md shadow-sm text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Set New Password'}
               </button>
@@ -159,7 +159,7 @@ export const ForgotPassword: React.FC = () => {
           <div className="mt-8 text-center border-t border-slate-800 pt-6">
             <p className="text-sm text-slate-400">
               Remembered your password?{' '}
-              <Link to="/login" className="font-medium text-brand-400 hover:text-brand-300 transition-colors">
+              <Link to="/login" className="font-medium text-slate-200 hover:text-white underline underline-offset-2 transition-colors">
                 Back to login
               </Link>
             </p>
