@@ -41,7 +41,7 @@ export const Login: React.FC = () => {
             Isolation.
           </h1>
           <p className="text-lg text-gray-400 font-medium max-w-md">
-            The next-generation multi-tenant control plane for WireGuard and Open vSwitch.
+            The next-generation control plane for WireGuard and Open vSwitch.
           </p>
         </div>
       </div>
@@ -123,7 +123,7 @@ export const Login: React.FC = () => {
           <div className="mt-10 text-center text-sm text-gray-400 font-medium">
             Don't have an account?{' '}
             <Link to="/register" className="text-white hover:text-gray-200 transition-colors">
-              Create a tenant
+              Create an account
             </Link>
           </div>
         </div>

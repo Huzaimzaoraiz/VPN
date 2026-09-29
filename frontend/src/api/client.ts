@@ -48,7 +48,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
 export const api = {
   // Auth
-  register: (data: { email: string; password: string; tenant_name: string }) =>
+  register: (data: { email: string; password: string }) =>
     request<any>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   
   verifyOtp: async (email: string, otp: string): Promise<AuthResponse> => {

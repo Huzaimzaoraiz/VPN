@@ -353,7 +353,7 @@ export const NetworkDetail: React.FC = () => {
         <div className=" dark-panel overflow-hidden">
           {firewallRules.length === 0 ? (
             <div className="p-12 text-center text-gray-400 text-xs">
-              Using default tenant isolation policy (Cross-Tenant Drop + WAN NAT Masquerade). Click "Add Rule" to configure custom filters.
+              Using default network isolation policy (Cross-Network Drop + WAN NAT Masquerade). Click "Add Rule" to configure custom filters.
             </div>
           ) : (
             <div className="overflow-x-auto">
