@@ -6,11 +6,6 @@ export interface User {
   created_at: string
 }
 
-export interface Tenant {
-  id: string
-  name: string
-  created_at: string
-}
 
 export interface AuthResponse {
   access_token: string
@@ -21,7 +16,7 @@ export interface AuthResponse {
 
 export interface Network {
   id: string
-  tenant_id: string
+  owner_id: string
   name: string
   cidr: string
   vlan_id: number

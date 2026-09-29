@@ -26,11 +26,15 @@ services:
     container_name: vpn-controller
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/vpn_db
-      JWT_SECRET: dev-super-secret-key-min-32-chars-long-1234
-      SECRET_KEY: dev-super-secret-key-min-32-chars-long-1234
-      GRPC_HOST: 0.0.0.0
-      GRPC_PORT: 50051
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgrespassword@postgres:5432/vpn_db}
+      JWT_SECRET: ${JWT_SECRET:-dev-super-secret-key-min-32-chars-long-1234}
+      GRPC_HOST: ${GRPC_HOST:-0.0.0.0}
+      GRPC_PORT: ${GRPC_PORT:-50051}
+      SMTP_HOST: ${SMTP_HOST:-smtp-relay.brevo.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM:-vpnoverlay@gmail.com}
     ports:
       - "8000:8000"
       - "50051:50051"
@@ -66,6 +70,7 @@ services:
       CONTROLLER_GRPC_URL: backend:50051
       NODE_ID: gateway-docker-01
       HOSTNAME: gw-docker-01.vpn.internal
+      NODE_TOKEN: ${NODE_TOKEN:-vpn_tok_your_token_here}
       PUBLIC_IP: ${PUBLIC_IP:-127.0.0.1}
       LISTEN_PORT: 51820
       REGION: ${REGION:-us-east-1}

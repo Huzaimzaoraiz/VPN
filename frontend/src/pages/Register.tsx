@@ -22,7 +22,6 @@ export const Register: React.FC = () => {
         await api.register({
           email,
           password,
-          tenant_name: 'Default Tenant',
         })
         setStep(2)
       } else {
@@ -63,7 +62,7 @@ export const Register: React.FC = () => {
           </div>
           <h1 className="text-5xl font-bold text-white tracking-tight leading-tight mb-4">
             Create Your <br />
-            Tenant Space.
+            Secure Workspace.
           </h1>
           <p className="text-lg text-gray-400 font-medium max-w-md">
             Get an isolated layer-3 overlay network with full control over your endpoints.

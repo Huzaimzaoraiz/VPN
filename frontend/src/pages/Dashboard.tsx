@@ -115,7 +115,7 @@ export const Dashboard: React.FC = () => {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tenant Isolation</span>
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Network Isolation</span>
             <p className="text-2xl font-semibold text-white">Enforced</p>
           </div>
         </div>
