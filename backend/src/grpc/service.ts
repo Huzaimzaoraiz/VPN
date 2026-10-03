@@ -71,6 +71,7 @@ export const VpnNodeControlServiceImpl = {
             listenPort: req.listen_port,
             capacity: req.capacity,
             region: req.region,
+            status: "READY",
           }
         });
       } else {
