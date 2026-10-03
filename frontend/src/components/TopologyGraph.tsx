@@ -9,7 +9,7 @@ interface TopologyGraphProps {
 
 export const TopologyGraph: React.FC<TopologyGraphProps> = ({ network, devices }) => {
   return (
-    <div className="p-6  bg-gray-100/60 border border-white backdrop-blur-md relative overflow-hidden">
+    <div className="p-6 bg-[#09090b] border border-white/10 rounded relative overflow-hidden">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h3 className="text-sm font-bold text-white uppercase tracking-wider">Network Topology & Datapath</h3>
@@ -26,8 +26,8 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({ network, devices }
       <div className="flex flex-col items-center">
         {/* Gateway Node */}
         <div className="relative group">
-          <div className="w-48 p-4  bg-black border-2 border-brand-500/50 shadow-xl shadow-brand-500/10 flex flex-col items-center text-center z-10 relative">
-            <div className="w-10 h-10  bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 mb-2">
+          <div className="w-48 p-4 bg-black border border-white/10 flex flex-col items-center text-center z-10 relative rounded">
+            <div className="w-10 h-10 border border-white/10 flex items-center justify-center text-white mb-2 rounded">
               <Server className="w-5 h-5" />
             </div>
             <span className="text-xs font-bold text-white truncate max-w-full">
@@ -37,10 +37,10 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({ network, devices }
               {network.assigned_gateway_ip || 'WAN IP'} : 51820
             </span>
             <div className="mt-2 flex gap-1">
-              <span className="px-1.5 py-0.5 text-[9px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              <span className="px-1.5 py-0.5 text-[9px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded">
                 OVS: br-vpn
               </span>
-              <span className="px-1.5 py-0.5 text-[9px] font-mono bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              <span className="px-1.5 py-0.5 text-[9px] font-mono bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded">
                 VLAN {network.vlan_id}
               </span>
             </div>
@@ -51,7 +51,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({ network, devices }
         {/* Bus connecting gateway to devices */}
         {devices.length > 0 && (
           <div className="w-full max-w-2xl h-0.5 bg-slate-700 mt-6 relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2  bg-brand-400"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.5)]"></div>
           </div>
         )}
 
@@ -62,13 +62,13 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({ network, devices }
             return (
               <div
                 key={device.id}
-                className="p-3.5  bg-black/80 border border-white hover:border-slate-700 transition-all flex flex-col items-center text-center relative group"
+                className="p-3.5 bg-[#09090b] border border-white/10 hover:border-white/20 transition-all flex flex-col items-center text-center relative group rounded"
               >
                 <div
-                  className={`w-8 h-8  flex items-center justify-center mb-2 ${
+                  className={`w-8 h-8 flex items-center justify-center mb-2 rounded ${
                     isOnline
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                      : 'bg-gray-100 text-gray-400'
+                      ? 'border border-white/20 text-white'
+                      : 'border border-white/5 text-gray-500'
                   }`}
                 >
                   <Laptop className="w-4 h-4" />
@@ -76,7 +76,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({ network, devices }
                 <span className="text-xs font-semibold text-white truncate max-w-full">
                   {device.name}
                 </span>
-                <span className="text-[11px] font-mono text-brand-400 mt-0.5">
+                <span className="text-[11px] font-mono text-blue-400 mt-0.5">
                   {device.vpn_ip}
                 </span>
 
@@ -87,13 +87,13 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({ network, devices }
                       <span>Ready</span>
                     </span>
                   ) : (
-                    <span className="flex items-center space-x-1 text-gray-400">
+                    <span className="flex items-center space-x-1 text-gray-500">
                       <WifiOff className="w-3 h-3" />
                       <span>{device.status}</span>
                     </span>
                   )}
                   {device.is_exit_node && (
-                    <span className="px-1.5 py-0.2 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[9px] uppercase">
+                    <span className="px-1.5 py-0.2 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[9px] uppercase rounded">
                       Exit Node
                     </span>
                   )}

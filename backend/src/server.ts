@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { env } from './config/env';
 import { startGrpcServer } from './grpc/server';
+import rateLimit from 'express-rate-limit';
 
 // Routes (to be implemented)
 import authRoutes from './api/auth';
@@ -14,11 +15,21 @@ import firewallRoutes from './api/firewall';
 
 const app = express();
 
+app.set('trust proxy', 1); // Trust Nginx proxy for correct IP
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each IP to 20 requests per windowMs
+  message: { detail: 'Too many authentication attempts, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use(cors({ origin: env.CORS_ORIGINS }));
 app.use(express.json());
 
 // API Routes
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/gateways', gatewayRoutes);
 app.use('/api/v1/networks', networkRoutes);
 app.use('/api/v1/devices', devicesRoutes);

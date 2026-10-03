@@ -76,12 +76,12 @@ export const Dashboard: React.FC = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">Virtual Networks</h1>
           <p className="text-xs sm:text-sm text-gray-400 mt-1">
-            Isolated layer-3 overlay segments with dedicated WireGuard endpoints and OVS VLANs
+            Create and manage secure, private WireGuard networks for your devices.
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 flex items-center space-x-2 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
+          className="px-4 py-2 flex items-center space-x-2 rounded bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Create Network</span>
@@ -90,30 +90,21 @@ export const Dashboard: React.FC = () => {
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 dark-panel flex items-center space-x-4 border border-white/10 rounded-xl">
-          <div className="w-12 h-12 border border-white/10 rounded-lg flex items-center justify-center text-white bg-white/5">
-            <NetworkIcon className="w-6 h-6" />
-          </div>
+        <div className="p-5 dark-panel flex flex-col justify-center border border-white/10 rounded-sm">
           <div>
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Networks</span>
             <p className="text-2xl font-semibold text-white">{networks.length}</p>
           </div>
         </div>
 
-        <div className="p-5 dark-panel flex items-center space-x-4 border border-white/10 rounded-xl">
-          <div className="w-12 h-12 border border-white/10 rounded-lg flex items-center justify-center text-white bg-white/5">
-            <Laptop className="w-6 h-6" />
-          </div>
+        <div className="p-5 dark-panel flex flex-col justify-center border border-white/10 rounded-sm">
           <div>
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Connected Peers</span>
             <p className="text-2xl font-semibold text-white">{totalDevices}</p>
           </div>
         </div>
 
-        <div className="p-5 dark-panel flex items-center space-x-4 border border-white/10 rounded-xl">
-          <div className="w-12 h-12 border border-white/10 rounded-lg flex items-center justify-center text-white bg-white/5">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
+        <div className="p-5 dark-panel flex flex-col justify-center border border-white/10 rounded-sm">
           <div>
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Network Isolation</span>
             <p className="text-2xl font-semibold text-white">Enforced</p>
@@ -131,8 +122,8 @@ export const Dashboard: React.FC = () => {
           {error}
         </div>
       ) : networks.length === 0 ? (
-        <div className="p-12 text-center dark-panel space-y-4 border border-white/10 rounded-xl">
-          <div className="w-16 h-16 border border-white/10 rounded-xl flex items-center justify-center text-gray-400 mx-auto bg-white/5">
+        <div className="p-12 text-center dark-panel space-y-4 border border-white/10 rounded-sm">
+          <div className="w-16 h-16 border border-white/10 rounded-sm flex items-center justify-center text-gray-400 mx-auto bg-white/5">
             <NetworkIcon className="w-8 h-8" />
           </div>
           <div className="max-w-md mx-auto">
@@ -143,7 +134,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-5 py-2 inline-flex items-center space-x-2 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
+            className="px-5 py-2 inline-flex items-center space-x-2 rounded bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Create Network</span>
@@ -154,12 +145,12 @@ export const Dashboard: React.FC = () => {
           {networks.map((network) => (
             <div
               key={network.id}
-              className="dark-panel dark-panel-hover p-6 flex flex-col justify-between group border border-white/10 rounded-xl"
+              className="dark-panel dark-panel-hover p-6 flex flex-col justify-between group border border-white/10 rounded-sm"
             >
               <div>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 border border-white/10 rounded-lg flex items-center justify-center text-white bg-white/5 group-hover:bg-white/10 transition-colors">
+                    <div className="w-12 h-12 border border-white/10 rounded flex items-center justify-center text-white bg-white/5 group-hover:bg-white/10 transition-colors">
                       <NetworkIcon className="w-6 h-6" />
                     </div>
                     <div>
@@ -171,7 +162,7 @@ export const Dashboard: React.FC = () => {
                   </div>
                   <button
                     onClick={() => handleDeleteNetwork(network.id, network.name)}
-                    className="text-gray-400 hover:text-red-400 p-2 hover:bg-white/5 rounded-lg transition-colors"
+                    className="text-gray-400 hover:text-red-400 p-2 hover:bg-white/5 rounded transition-colors"
                     title="Delete Network"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -215,10 +206,10 @@ export const Dashboard: React.FC = () => {
       {/* Create Network Modal */}
       {isModalOpen && (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0a0a0a] border border-white/10 rounded-xl max-w-md w-full p-8 shadow-2xl relative">
+          <div className="bg-[#0a0a0a] border border-white/10 rounded-sm max-w-md w-full p-8 shadow-2xl relative">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors bg-transparent border-none p-1 hover:bg-white/5 rounded-lg"
+              className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors bg-transparent border-none p-1 hover:bg-white/5 rounded"
             >
               <X className="w-5 h-5" />
             </button>
@@ -263,7 +254,7 @@ export const Dashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors bg-transparent hover:bg-white/5 rounded-lg border-none"
+                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors bg-transparent hover:bg-white/5 rounded border-none"
                 >
                   Cancel
                 </button>

@@ -5,11 +5,11 @@
 :root {
   --font-sans: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --bg-base: #000000;
-  --bg-surface: #0a0a0a;
-  --text-main: #ffffff;
-  --text-muted: #a3a3a3;
+  --bg-surface: #09090b;
+  --text-main: #fafafa;
+  --text-muted: #a1a1aa;
   --border-subtle: rgba(255, 255, 255, 0.1);
-  --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
   --color-paper-accent: #ffffff;
 }
 
@@ -26,7 +26,7 @@
   }
 
   input, button {
-    @apply transition-all duration-200 ease-in-out rounded-lg;
+    @apply transition-all duration-200 ease-in-out rounded;
   }
   
   input {
@@ -42,7 +42,11 @@
   }
   
   .btn-primary {
-    @apply font-semibold cursor-pointer bg-white text-black border border-transparent hover:bg-gray-200 flex items-center justify-center space-x-2 px-4 py-2;
+    @apply font-medium cursor-pointer text-black bg-white flex items-center justify-center space-x-2 px-4 py-2 transition-colors;
+    border: 1px solid transparent;
+  }
+  .btn-primary:hover {
+    @apply bg-gray-200;
   }
 }
 
@@ -51,13 +55,13 @@
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     box-shadow: var(--shadow-lg);
-    border-radius: 0.75rem;
+    border-radius: 0.25rem;
   }
 
   .paper-card-sm {
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
   }
 
   .text-accent {
