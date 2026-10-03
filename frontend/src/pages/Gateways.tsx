@@ -70,7 +70,7 @@ export const Gateways: React.FC = () => {
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2">Gateway Nodes</h1>
           <p className="text-sm text-gray-400">
-            Data-plane compute instances executing autonomous desired-state reconciliation.
+            Manage your active VPN Gateway servers that handle device connections.
           </p>
         </div>
         <div className="flex flex-col items-end space-y-3">
@@ -80,7 +80,7 @@ export const Gateways: React.FC = () => {
           </div>
           <button
             onClick={handleGenerateToken}
-            className="px-5 py-2 flex items-center space-x-2 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
+            className="px-5 py-2 flex items-center space-x-2 rounded bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
           >
             Deploy New Node
           </button>
@@ -88,9 +88,9 @@ export const Gateways: React.FC = () => {
       </div>
 
       {generatedToken && (
-        <div className="p-6 bg-[#0a0a0a] border border-emerald-500/30 rounded-xl text-white">
+        <div className="p-6 bg-[#0a0a0a] border border-emerald-500/30 rounded-sm text-white">
           <p className="text-sm mb-3 font-semibold text-emerald-400">New Node Token Generated! Copy this and set it as <code className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">NODE_TOKEN</code> in your server's .env file before starting the agent.</p>
-          <code className="px-4 py-3 bg-black border border-white/10 rounded-lg text-white font-mono text-sm block select-all overflow-x-auto">{generatedToken}</code>
+          <code className="px-4 py-3 bg-black border border-white/10 rounded text-white font-mono text-sm block select-all overflow-x-auto">{generatedToken}</code>
         </div>
       )}
 
@@ -99,7 +99,7 @@ export const Gateways: React.FC = () => {
           <RefreshCw className="w-8 h-8 animate-spin text-brand-500" />
         </div>
       ) : gateways.length === 0 ? (
-        <div className="p-12 text-center dark-panel text-gray-400 text-sm border border-white/10 rounded-xl">
+        <div className="p-12 text-center dark-panel text-gray-400 text-sm border border-white/10 rounded-sm">
           No gateways registered in cluster. Launch a Linux VM agent to register automatically.
         </div>
       ) : (
@@ -107,11 +107,11 @@ export const Gateways: React.FC = () => {
           {gateways.map((gw) => {
             const isReady = gw.status === 'READY'
             return (
-              <div key={gw.id} className="dark-panel dark-panel-hover p-6 space-y-6 relative overflow-hidden border border-white/10 rounded-xl">
+              <div key={gw.id} className="dark-panel dark-panel-hover p-6 space-y-6 relative overflow-hidden border border-white/10 rounded-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div
-                      className={`w-14 h-14 rounded-lg flex items-center justify-center border border-white/10 ${
+                      className={`w-14 h-14 rounded flex items-center justify-center border border-white/10 ${
                         isReady
                           ? 'bg-emerald-500/10 text-emerald-400'
                           : 'bg-rose-500/10 text-rose-400'
@@ -161,7 +161,7 @@ export const Gateways: React.FC = () => {
                 </div>
 
                 {/* Gateway Details */}
-                <div className="grid grid-cols-2 gap-3 p-4 bg-[#111] border border-white/10 rounded-lg text-xs font-mono">
+                <div className="grid grid-cols-2 gap-3 p-4 bg-[#111] border border-white/10 rounded text-xs font-mono">
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase block mb-1">Public Endpoint:</span>
                     <span className="text-white font-semibold text-sm">{gw.public_ip}:{gw.listen_port}</span>

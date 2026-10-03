@@ -49,16 +49,16 @@ export const RouteModal: React.FC<RouteModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#0a0a0a] border border-white/10 rounded-xl max-w-md w-full p-6 shadow-2xl relative">
+      <div className="bg-[#0a0a0a] border border-white/10 rounded-sm max-w-md w-full p-6 shadow-2xl relative">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-gray-400 hover:text-white p-1 hover:bg-white/5 rounded-lg transition-colors bg-transparent border-none"
+          className="absolute top-5 right-5 text-gray-400 hover:text-white p-1 hover:bg-white/5 rounded transition-colors bg-transparent border-none"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="flex items-center space-x-4 mb-5">
-          <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300">
+          <div className="w-12 h-12 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-gray-300">
             <RouteIcon className="w-6 h-6" />
           </div>
           <div>
@@ -68,7 +68,7 @@ export const RouteModal: React.FC<RouteModalProps> = ({
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium">
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded text-red-400 text-sm font-medium">
             {error}
           </div>
         )}
@@ -96,7 +96,7 @@ export const RouteModal: React.FC<RouteModalProps> = ({
               value={nextHopVpnIp}
               onChange={(e) => setNextHopVpnIp(e.target.value)}
               required
-              className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg text-slate-100 text-sm px-3.5 py-2.5 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/10"
+              className="w-full bg-[#0a0a0a] border border-white/10 rounded text-slate-100 text-sm px-3.5 py-2.5 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/10"
             >
               <option value="">Select a device...</option>
               {devices.map((d) => (
@@ -124,7 +124,7 @@ export const RouteModal: React.FC<RouteModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white bg-transparent hover:bg-white/5 rounded-lg border-none transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white bg-transparent hover:bg-white/5 rounded border-none transition-colors"
             >
               Cancel
             </button>

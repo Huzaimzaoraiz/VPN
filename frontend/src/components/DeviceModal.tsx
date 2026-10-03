@@ -107,10 +107,10 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#0a0a0a] border border-white/10 rounded-xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#0a0a0a] border border-white/10 rounded-sm max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-gray-400 hover:text-white p-1 hover:bg-white/5 rounded-lg transition-colors bg-transparent border-none"
+          className="absolute top-5 right-5 text-gray-400 hover:text-white p-1 hover:bg-white/5 rounded transition-colors bg-transparent border-none"
         >
           <X className="w-5 h-5" />
         </button>
@@ -118,7 +118,7 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
         {!createdConfig ? (
           <div>
             <div className="flex items-center space-x-4 mb-5">
-              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300">
+              <div className="w-12 h-12 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-gray-300">
                 <Laptop className="w-6 h-6" />
               </div>
               <div>
@@ -130,7 +130,7 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium">
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded text-red-400 text-sm font-medium">
                 {error}
               </div>
             )}
@@ -150,7 +150,7 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
                 />
               </div>
 
-              <div className="p-4 bg-[#111] border border-white/10 rounded-lg space-y-3">
+              <div className="p-4 bg-[#111] border border-white/10 rounded space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 text-sm font-semibold text-gray-300">
                     <Key className="w-4 h-4 text-brand-400" />
@@ -185,7 +185,7 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-[#111] border border-white/10 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-[#111] border border-white/10 rounded">
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-gray-300">Act as Exit Node</span>
                   <span className="text-xs text-gray-500 mt-0.5">Route WAN internet traffic through this device</span>
@@ -202,7 +202,7 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white bg-transparent hover:bg-white/5 rounded-lg border-none transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white bg-transparent hover:bg-white/5 rounded border-none transition-colors"
                 >
                   Cancel
                 </button>
@@ -226,7 +226,7 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
         ) : (
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <div className="w-12 h-12 rounded-sm bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                 <Check className="w-6 h-6" />
               </div>
               <div>
@@ -237,8 +237,8 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-[#111] border border-white/10 rounded-xl">
-              <div className="p-4 bg-white rounded-xl shadow-sm flex-shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-[#111] border border-white/10 rounded-sm">
+              <div className="p-4 bg-white rounded-sm shadow-sm flex-shrink-0">
                 <QRCodeSVG value={clientConfText} size={150} level="M" />
               </div>
               <div className="space-y-3 text-sm text-gray-400">
@@ -249,14 +249,14 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
                 <div className="pt-2 flex flex-wrap items-center gap-3">
                   <button
                     onClick={handleDownloadConfig}
-                    className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 text-sm font-semibold flex items-center space-x-2 transition-colors"
+                    className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-gray-300 text-sm font-semibold flex items-center space-x-2 transition-colors"
                   >
                     <Download className="w-4 h-4 text-emerald-400" />
                     <span>Download .conf</span>
                   </button>
                   <button
                     onClick={handleCopyConfig}
-                    className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 text-sm font-semibold flex items-center space-x-2 transition-colors"
+                    className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-gray-300 text-sm font-semibold flex items-center space-x-2 transition-colors"
                   >
                     {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-gray-400" />}
                     <span>{copied ? 'Copied!' : 'Copy Text'}</span>
@@ -269,7 +269,7 @@ export const DeviceModal: React.FC<DeviceModalProps> = ({
               <span className="text-[11px] uppercase font-semibold text-gray-500 tracking-wider block mb-2">
                 WireGuard Configuration File Preview:
               </span>
-              <pre className="p-4 bg-black border border-white/10 rounded-xl text-xs font-mono text-gray-400 overflow-x-auto max-h-40">
+              <pre className="p-4 bg-black border border-white/10 rounded-sm text-xs font-mono text-gray-400 overflow-x-auto max-h-40">
                 {clientConfText}
               </pre>
             </div>

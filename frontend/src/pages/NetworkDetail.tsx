@@ -126,10 +126,10 @@ export const NetworkDetail: React.FC = () => {
           <span>Back to All Networks</span>
         </Link>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 dark-panel border border-white/10 rounded-xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 dark-panel border border-white/10 rounded-sm">
           <div className="relative z-10">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 border border-white/10 rounded-xl flex items-center justify-center text-white bg-white/5">
+              <div className="w-16 h-16 border border-white/10 rounded-sm flex items-center justify-center text-white bg-white/5">
                 <NetworkIcon className="w-8 h-8" />
               </div>
               <div>
@@ -234,7 +234,7 @@ export const NetworkDetail: React.FC = () => {
 
       {/* Tab Contents */}
       {activeTab === 'devices' && (
-        <div className="dark-panel overflow-hidden border border-white/10 rounded-xl">
+        <div className="dark-panel overflow-hidden border border-white/10 rounded-sm">
           {devices.length === 0 ? (
             <div className="p-12 text-center text-gray-400 text-sm">
               No devices registered. Click "Add Device" to generate keys and onboard your first peer.
@@ -271,7 +271,7 @@ export const NetworkDetail: React.FC = () => {
                           <span>{device.public_key.substring(0, 14)}...</span>
                           <button
                             onClick={() => handleCopy(device.public_key)}
-                            className="p-1 hover:text-white bg-transparent hover:bg-white/5 rounded-lg border-none"
+                            className="p-1 hover:text-white bg-transparent hover:bg-white/5 rounded border-none"
                             title="Copy Public Key"
                           >
                             {copiedKey === device.public_key ? (
@@ -294,7 +294,7 @@ export const NetworkDetail: React.FC = () => {
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => handleDeleteDevice(device.id)}
-                          className="text-gray-400 hover:text-red-400 p-2 hover:bg-white/5 bg-transparent rounded-lg border-none transition-colors"
+                          className="text-gray-400 hover:text-red-400 p-2 hover:bg-white/5 bg-transparent rounded border-none transition-colors"
                           title="Remove Device"
                         >
                           <Trash2 className="w-4 h-4" />
