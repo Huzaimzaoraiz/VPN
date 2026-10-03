@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Shield, Lock, Mail, ArrowRight, RefreshCw } from 'lucide-react'
+import { Lock, Mail, ArrowRight, RefreshCw } from 'lucide-react'
 import { api } from '../api/client'
 
 export const Register: React.FC = () => {
