@@ -142,7 +142,7 @@ export const NetworkDetail: React.FC = () => {
                   <span>•</span>
                   <span className="flex items-center space-x-1">
                     <Server className="w-3.5 h-3.5 text-gray-400" />
-                    <span>Gateway: <strong className="text-white font-semibold">{network.assigned_gateway_hostname || 'Ready'}</strong></span>
+                    <span>Gateway: <strong className="text-white font-semibold">{network.assigned_gateway_hostname || 'None (Unassigned)'}</strong></span>
                   </span>
                 </div>
               </div>
