@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Shield, Network, Server, LogOut } from 'lucide-react'
+import { Network, Server, LogOut } from 'lucide-react'
 import { api } from '../api/client'
 
 export const Navbar: React.FC = () => {

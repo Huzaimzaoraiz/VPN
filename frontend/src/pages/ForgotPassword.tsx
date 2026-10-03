@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Shield, Mail, KeyRound, Lock, ArrowRight, Loader2 } from 'lucide-react'
+import { Mail, KeyRound, Lock, ArrowRight, Loader2 } from 'lucide-react'
 import { api } from '../api/client'
 
 export const ForgotPassword: React.FC = () => {

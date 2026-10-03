@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Network as NetworkIcon, Plus, Laptop, Trash2, ArrowRight, ShieldCheck, RefreshCw, X } from 'lucide-react'
+import { Network as NetworkIcon, Plus, Trash2, ArrowRight, RefreshCw, X } from 'lucide-react'
 import { api } from '../api/client'
 import { Network } from '../types'
 
