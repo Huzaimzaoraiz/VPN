@@ -1,3 +1,4 @@
+import subprocess
 import logging
 from typing import List
 from vpn_node.src.config import node_settings
@@ -11,7 +12,7 @@ class RoutingManager:
 
     def add_route(self, route: RouteState):
         """
-        Adds a route using pyroute2 Netlink socket.
+        Adds or replaces a route in Linux kernel routing table.
         """
         if node_settings.MOCK_NETWORKING:
             self._mock_routes[route.destination] = route
@@ -19,27 +20,21 @@ class RoutingManager:
             return
 
         try:
-            from pyroute2 import IPRoute
-            with IPRoute() as ipr:
-                idx = ipr.link_lookup(ifname=route.interface)
-                if not idx:
-                    logger.warning(f"Interface {route.interface} not found when adding route.")
-                    return
-                oif = idx[0]
-                # WireGuard interfaces are point-to-point (NOARP). Specifying next-hop gateway causes EINVAL.
-                if route.interface.startswith("wg") or not route.next_hop:
-                    ipr.route("replace", dst=route.destination, oif=oif)
-                    logger.info(f"Installed WireGuard interface route: {route.destination} dev {route.interface}")
-                else:
-                    try:
-                        ipr.route("replace", dst=route.destination, gateway=route.next_hop, oif=oif)
-                        logger.info(f"Installed route: {route.destination} via {route.next_hop} on {route.interface}")
-                    except Exception:
-                        ipr.route("replace", dst=route.destination, oif=oif)
-                        logger.info(f"Installed route: {route.destination} dev {route.interface}")
+            # WireGuard interfaces are point-to-point (NOARP). Specifying next-hop gateway can cause EINVAL.
+            if route.interface.startswith("wg") or not route.next_hop:
+                cmd = ["ip", "route", "replace", route.destination, "dev", route.interface]
+            else:
+                cmd = ["ip", "route", "replace", route.destination, "via", route.next_hop, "dev", route.interface]
+            subprocess.run(cmd, check=True)
+            logger.info(f"Installed route: {route.destination} on {route.interface}")
         except Exception as e:
-            logger.error(f"Failed to add route {route.destination}: {e}")
-            raise
+            try:
+                cmd = ["ip", "route", "replace", route.destination, "dev", route.interface]
+                subprocess.run(cmd, check=True)
+                logger.info(f"Installed route (dev fallback): {route.destination} dev {route.interface}")
+            except Exception as e2:
+                logger.error(f"Failed to add route {route.destination}: {e2}")
+                raise
 
     def delete_route(self, destination: str, interface: str = "wg0"):
         """
@@ -51,43 +46,40 @@ class RoutingManager:
             return
 
         try:
-            from pyroute2 import IPRoute
-            with IPRoute() as ipr:
-                idx = ipr.link_lookup(ifname=interface)
-                if idx:
-                    ipr.route("del", dst=destination, oif=idx[0])
-                    logger.info(f"Deleted route: {destination}")
+            cmd = ["ip", "route", "del", destination, "dev", interface]
+            subprocess.run(cmd, check=False)
+            logger.info(f"Deleted route: {destination}")
         except Exception as e:
             logger.warning(f"Could not delete route {destination}: {e}")
 
     def inspect_actual_routes(self, interface: str = "wg0") -> List[RouteState]:
         """
-        Inspects actual routes bound to the interface using pyroute2 Netlink.
+        Inspects actual routes bound to the interface using standard ip route CLI.
         """
         if node_settings.MOCK_NETWORKING:
             return list(self._mock_routes.values())
 
         routes = []
         try:
-            from pyroute2 import IPRoute
-            with IPRoute() as ipr:
-                idx = ipr.link_lookup(ifname=interface)
-                if not idx:
-                    return []
-                dev_idx = idx[0]
-                for r in ipr.get_routes(family=2): # AF_INET
-                    oif = r.get_attr("RTA_OIF")
-                    if oif == dev_idx:
-                        dst = r.get_attr("RTA_DST")
-                        dst_len = r.get("dst_len", 32)
-                        gateway = r.get_attr("RTA_GATEWAY") or ""
-                        if dst:
-                            routes.append(RouteState(
-                                destination=f"{dst}/{dst_len}",
-                                next_hop=gateway,
-                                interface=interface
-                            ))
+            res = subprocess.run(["ip", "-4", "route", "show", "dev", interface], capture_output=True, text=True, check=True)
+            for line in res.stdout.strip().splitlines():
+                parts = line.strip().split()
+                if not parts:
+                    continue
+                dst = parts[0]
+                if "/" not in dst:
+                    dst = f"{dst}/32"
+                next_hop = ""
+                if "via" in parts:
+                    via_idx = parts.index("via")
+                    if via_idx + 1 < len(parts):
+                        next_hop = parts[via_idx + 1]
+                routes.append(RouteState(
+                    destination=dst,
+                    next_hop=next_hop,
+                    interface=interface
+                ))
         except Exception as e:
-            logger.warning(f"Could not inspect actual routes via pyroute2: {e}")
+            logger.warning(f"Could not inspect actual routes via ip route: {e}")
 
         return routes
