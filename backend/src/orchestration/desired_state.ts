@@ -106,14 +106,14 @@ export class DesiredStateEngine {
           destination_cidr: r.destinationCidr,
           protocol: "all",
           port: null,
-          action: "allow"
+          action: "accept"
         });
         firewallRules.push({
           source_cidr: r.destinationCidr,
           destination_cidr: net.cidr,
           protocol: "all",
           port: null,
-          action: "allow"
+          action: "accept"
         });
       }
 

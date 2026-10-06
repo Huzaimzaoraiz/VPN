@@ -45,6 +45,8 @@ class NftablesManager:
         # 4. Custom user firewall rules
         for rule in firewall.rules:
             action = rule.action.lower()
+            if action == "allow":
+                action = "accept"
             proto = rule.protocol.lower() if rule.protocol else "all"
             if proto in ("tcp", "udp"):
                 proto_clause = f" {proto}"
