@@ -16,7 +16,9 @@ class NftablesManager:
         """
         lines = [
             "#!/usr/sbin/nft -f",
+            "add table inet vpn_filter",
             "flush table inet vpn_filter",
+            "add table inet vpn_nat",
             "flush table inet vpn_nat",
             "",
             "table inet vpn_filter {",
