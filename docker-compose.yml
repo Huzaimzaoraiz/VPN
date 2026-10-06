@@ -49,7 +49,10 @@ services:
       - NET_RAW
     ports:
       - "51820:51820/udp"
+    volumes:
+      - vpn-node-data:/etc/wireguard
     environment:
+      WG_KEY_PATH: /etc/wireguard/wg_gateway.key
       CONTROLLER_GRPC_URL: backend:50051
       NODE_ID: gateway-docker-01
       HOSTNAME: gw-docker-01.vpn.internal
@@ -60,3 +63,6 @@ services:
       MOCK_NETWORKING: ${MOCK_NETWORKING:-false}
     depends_on:
       - backend
+
+volumes:
+  vpn-node-data:
