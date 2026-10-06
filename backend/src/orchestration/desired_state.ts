@@ -61,7 +61,7 @@ export class DesiredStateEngine {
       for (const dev of net.devices) {
         const allowed = [`${dev.vpnIp}/32`];
         for (const r of net.routes) {
-          if (r.deviceId === dev.id) allowed.push(r.destinationCidr);
+          if (r.deviceId === dev.id || r.nextHopVpnIp === dev.vpnIp) allowed.push(r.destinationCidr);
         }
 
         wgPeers.push({
@@ -79,7 +79,44 @@ export class DesiredStateEngine {
           next_hop: r.nextHopVpnIp,
           interface: "wg0"
         });
+        // 1. OVS flows: Allow tenant <-> custom route subnet on this VLAN
+        ovsFlows.push({
+          table: 0, priority: 100,
+          match: `ip,nw_src=${net.cidr},nw_dst=${r.destinationCidr}`,
+          actions: `mod_vlan_vid:${net.vlanId},resubmit(,1)`
+        });
+        ovsFlows.push({
+          table: 1, priority: 100,
+          match: `dl_vlan=${net.vlanId},ip,nw_dst=${r.destinationCidr}`,
+          actions: "strip_vlan,NORMAL"
+        });
+        ovsFlows.push({
+          table: 0, priority: 100,
+          match: `ip,nw_src=${r.destinationCidr},nw_dst=${net.cidr}`,
+          actions: `mod_vlan_vid:${net.vlanId},resubmit(,1)`
+        });
+        ovsFlows.push({
+          table: 1, priority: 100,
+          match: `dl_vlan=${net.vlanId},ip,nw_dst=${net.cidr}`,
+          actions: "strip_vlan,NORMAL"
+        });
+        // 2. nftables firewall: Allow transit between tenant and custom route
+        firewallRules.push({
+          source_cidr: net.cidr,
+          destination_cidr: r.destinationCidr,
+          protocol: "all",
+          port: null,
+          action: "allow"
+        });
+        firewallRules.push({
+          source_cidr: r.destinationCidr,
+          destination_cidr: net.cidr,
+          protocol: "all",
+          port: null,
+          action: "allow"
+        });
       }
+
 
       for (const fw of net.firewalls) {
         firewallRules.push({

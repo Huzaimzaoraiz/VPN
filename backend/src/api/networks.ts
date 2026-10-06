@@ -49,7 +49,7 @@ router.post('/', async (req: AuthRequest, res) => {
     _max: { vlanId: true }
   });
   const vlanId = (maxVlan._max.vlanId || 99) + 1;
-  
+
   const octet2 = Math.floor(vlanId / 255) % 255;
   const octet3 = vlanId % 255;
   const finalCidr = data.cidr || `10.${Math.max(1, octet2)}.${octet3}.0/24`;
@@ -174,7 +174,7 @@ router.post('/:id/devices', async (req: AuthRequest, res) => {
       const currentDevices = await prisma.device.findMany({ where: { networkId: network.id } });
       const usedIps = currentDevices.map(d => d.vpnIp);
       const vpnIp = IPAMService.allocateNextIp(network.cidr, usedIps);
-      
+
       if (!vpnIp) {
         res.status(400).json({ detail: 'Network CIDR exhausted' });
         return;
@@ -250,25 +250,27 @@ router.post('/:id/routes', async (req: AuthRequest, res) => {
   const data = createRouteSchema.parse(req.body);
   const network = await prisma.network.findFirst({
     where: { id: req.params.id, ownerId: req.user.id },
-    include: { assignments: true }
+    include: { assignments: true, devices: true }
   });
   if (!network) {
     res.status(404).json({ detail: 'Network not found' });
     return;
   }
 
+  // Auto-resolve deviceId from the next_hop_vpn_ip
+  const matchedDevice = network.devices.find(d => d.vpnIp === data.next_hop_vpn_ip);
+
   const route = await prisma.route.create({
     data: {
       destinationCidr: data.destination_cidr,
       nextHopVpnIp: data.next_hop_vpn_ip,
-      networkId: req.params.id
+      networkId: req.params.id,
+      deviceId: matchedDevice ? matchedDevice.id : null
     }
   });
 
-  if (network) {
-    for (const assignment of network.assignments) {
-      await DesiredStateEngine.generateGatewayDesiredState(assignment.gatewayId);
-    }
+  for (const assignment of network.assignments) {
+    await DesiredStateEngine.generateGatewayDesiredState(assignment.gatewayId);
   }
 
   res.status(201).json({
@@ -277,6 +279,7 @@ router.post('/:id/routes', async (req: AuthRequest, res) => {
     next_hop_vpn_ip: route.nextHopVpnIp
   });
 });
+
 
 const createFirewallRuleSchema = z.object({
   action: z.enum(['allow', 'drop']),
