@@ -101,12 +101,18 @@ class Reconciler:
         routes_to_add: list[RouteState] = []
         routes_to_remove: list[str] = []
 
+        # Protect tenant networks so subnet routes are not purged
+        protected_cidrs = set(desired.firewall.isolated_networks)
+        for cidr in protected_cidrs:
+            if cidr not in actual_routes_map:
+                routes_to_add.append(RouteState(destination=cidr, next_hop="", interface=self.wg.interface))
+
         for dest, next_hop in desired_routes_map.items():
             if dest not in actual_routes_map or actual_routes_map[dest] != next_hop:
                 routes_to_add.append(RouteState(destination=dest, next_hop=next_hop, interface=self.wg.interface))
 
         for dest in actual_routes_map:
-            if dest not in desired_routes_map:
+            if dest not in desired_routes_map and dest not in protected_cidrs:
                 routes_to_remove.append(dest)
 
         return {
